@@ -1,11 +1,11 @@
-import { MonsterTemplate } from "./monsterTemplate";
+import { Monster } from "./monster";
 
 export class Team
     {
         name: string;
-        monsters: MonsterTemplate[];
+        monsters: Monster[];
 
-        public Team (name: string, monsters: MonsterTemplate[] ) {
+        public Team (name: string, monsters: Monster[] ) {
             this.name = name;
             this.monsters = monsters;
         }
