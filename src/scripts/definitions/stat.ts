@@ -1,4 +1,7 @@
-﻿/** this is the data structure for the CONSTITUTION stat of a monster.
+﻿import _ from "lodash";
+
+
+/** this is the data structure for the CONSTITUTION stat of a monster.
 */
 export class Stat {
     value: number;       //base value
@@ -27,9 +30,32 @@ export class StatWithModifier extends Stat {
         this.stage = 0;
     }
 
+    /** WIP function to replace buffStat and debuffStat with a universal function
+     * still requires a lot of testing
+     * @param amount - the amount of stages to buff the stat.
+     * */
+    public modifyStat(amount): boolean {
+        if((amount < 0 && this.stage === -6)){
+            console.log("stat cannot go any lower")
+            return false;
+        }
+        if((amount > 0 && this.stage === 6)){
+            console.log("stat cannot go any higher")
+            return false;
+        }
+        const newStage = _.clamp(this.stage + amount, -6, 6);
+        const newStatMod = 
+            newStage > 0 ? 2 / (2 - newStage)
+            : newStage < 0 ? (2 + newStage) / 2
+            : 1;
+
+        this.stage = newStage;
+        this.statMod = newStatMod;
+        return true;
+    }
     
     /** boosts a stat for a certain number of stages
-     * @{amount} the amount of stages to buff the stat. default: 1
+     * @param amount - the amount of stages to buff the stat. default: 1
      * */
     public buffStat(amount = 1): boolean{ 
         if(this.stage < 6){

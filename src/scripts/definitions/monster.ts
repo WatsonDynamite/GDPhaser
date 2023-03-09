@@ -26,13 +26,12 @@ export class Monster
     /** dex entry */
     desc: string;
 
-     /** max health value (used for healing calculations and to display to the user). DO NOT CONFUSE WITH THE HP STAT ITSELF, BECAUSE I SURE DID. */ 
-     maxHP: number
-     /** the current HP value. Think of this variable as the actual "life bar". */
-     currentHP: number;
- 
-     /** status effect that the monster is currently afflicted with, if any */
-     statusEffect?: StatusEffect;
+    /** max health value (used for healing calculations and to display to the user). DO NOT CONFUSE WITH THE HP STAT ITSELF, BECAUSE I SURE DID. */ 
+    maxHP: number
+    /** the current HP value. Think of this variable as the actual "life bar". */
+    currentHP: number;  
+    /** status effect that the monster is currently afflicted with, if any */
+    statusEffect?: StatusEffect;
 
     /** The stats of the monster */
     stats: {
