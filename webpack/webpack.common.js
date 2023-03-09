@@ -13,7 +13,33 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js']
   },
   module: {
-    rules: [{ test: /\.tsx?$/, include: path.join(__dirname, '../src'), loader: 'ts-loader' }]
+    rules: [
+      {
+        test: /\.css$/,
+        use: [{ loader: "style-loader" }, { loader: "css-loader" }]
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: "babel-loader"
+      },
+      {
+        test: [/\.vert$/, /\.frag$/],
+        use: "raw-loader"
+      },
+      {
+        test: /\.(gif|png|jpe?g|svg|xml)$/i,
+        use: "file-loader"
+      },
+      { test: /\.tsx?$/, include: path.join(__dirname, '../src'), loader: 'ts-loader' }
+    ]
   },
   optimization: {
     splitChunks: {
