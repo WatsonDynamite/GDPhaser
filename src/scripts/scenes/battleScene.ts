@@ -1,5 +1,6 @@
 import { Scene3D } from '@enable3d/phaser-extension'
 import { GridSpot } from '../../gameObjects/gridSpot';
+import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher';
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -9,21 +10,22 @@ export default class BattleScene extends Scene3D {
   private lastUpdateMoment = 0;
   private forcedUpdateMoment = 0;
   private isWaiting4ActualUpdateEvent = false;
+  private Emitter = CustomEventDispatcher.getInstance();
 
   init() {
     this.accessThirdDimension()
+    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_CHAT_UI);
   }
 
   create() {
     // creates a nice scene
-    //this.third.warpSpeed('-orbitControls', '-grid', '-lookAtCenter', '-ground');
     this.third.warpSpeed( '-orbitControls', '-grid', '-lookAtCenter', '-ground');
     this.third.camera.translateX(4.2);
     this.third.camera.translateZ(-2.8);
     this.third.camera.translateY(-5.2);
     this.third.camera.rotateY(0.4);
     this.third.camera.rotateX(-0.3);
-    
+
     this.third.load.preload('grass', '/assets/materials/grass.jpg');
     this.third.load.texture('grass').then(grass => {
       grass.wrapS = grass.wrapT = 3 // RepeatWrapping
