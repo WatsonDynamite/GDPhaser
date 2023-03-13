@@ -4,10 +4,7 @@ import styled from "styled-components";
 export default class App extends React.Component {
  render() {
   return (
-    <AppCanvas onClick={(e) => e.preventDefault()}>
-        <div style={{ textAlign: "center" }}>
-            <h1> TEST asdasdsad </h1>
-        </div>
+    <AppCanvas>
     </AppCanvas>
   );
  }

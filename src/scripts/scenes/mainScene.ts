@@ -4,6 +4,10 @@ export default class MainScene extends Scene3D {
   constructor() {
     super({ key: 'MainScene' })
   }
+  
+  private lastUpdateMoment = 0;
+  private forcedUpdateMoment = 0;
+  private isWaiting4ActualUpdateEvent = false;
 
   init() {
     this.accessThirdDimension()
@@ -23,5 +27,21 @@ export default class MainScene extends Scene3D {
     this.third.haveSomeFun()
   }
 
-  update() {}
+  update(t, dt){
+    this.lastUpdateMoment = t;
+	  if (this.isWaiting4ActualUpdateEvent){
+        this.forcedUpdateMoment = this.lastUpdateMoment;
+        this.isWaiting4ActualUpdateEvent = false;
+    }
+    //then your regular game code
+  }
+
+  awayUpdate(){
+    if (this.lastUpdateMoment>this.forcedUpdateMoment+5000){
+      this.forcedUpdateMoment = this.lastUpdateMoment
+  	} else {
+      this.update(this.forcedUpdateMoment+10000, 10000)
+      this.forcedUpdateMoment = this.lastUpdateMoment;
+    }
+  }
 }
