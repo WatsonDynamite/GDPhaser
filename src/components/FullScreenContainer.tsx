@@ -8,6 +8,7 @@ const FullScreenContainer = styled.div`
     > * {
         position: relative;
         z-index: 1;
+        user-select: none;
     }
 `
 

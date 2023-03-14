@@ -10,8 +10,8 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1280,
-    height: 720
+    width: 1920,
+    height: 1080
   },
   scene: [PreloadScene, BattleScene],
   ...Canvas()
