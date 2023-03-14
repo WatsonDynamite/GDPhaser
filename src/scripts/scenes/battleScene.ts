@@ -1,20 +1,36 @@
-import { Scene3D, THREE } from '@enable3d/phaser-extension'
+import { FLAT, Scene3D, THREE } from '@enable3d/phaser-extension'
 import { GridSpot } from '../../gameObjects/gridSpot';
+import MonsterGameObj from '../../gameObjects/monsterGameObject';
 import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher';
+import { Abilities } from '../definitions/ability';
+import { Monster } from '../definitions/monster';
+import { Moves } from '../definitions/move';
+import { Type } from '../definitions/type';
+import Charizardb from 'src/assets/sprites/monstersprites/charizard_b.png';
 
 export default class BattleScene extends Scene3D {
   constructor() {
-    super({ key: 'MainScene' })
+    super({ key: 'BattleScene' })
   }
   
-  private lastUpdateMoment = 0;
-  private forcedUpdateMoment = 0;
-  private isWaiting4ActualUpdateEvent = false;
   private EventDispatcher = CustomEventDispatcher.getInstance();
+
+  private playerGrid;
+  private enemyGrid;
 
   init() {
     this.accessThirdDimension()
-    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_CHAT_UI);
+    //CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_CHAT_UI);
+    this.playerGrid = [
+      [new GridSpot(1, this, {  x: 3.45, y: 0.51, z: 8.4 } ), new GridSpot(1, this, {  x: 3.70, y: 0.51, z: 8.4 } )],
+      [new GridSpot(1, this, {  x: 3.95, y: 0.51, z: 8.4 } ), new GridSpot(1, this, {  x: 3.45, y: 0.51, z: 8.60 } )],
+      [new GridSpot(1, this, {  x: 3.70, y: 0.51, z: 8.60 }), new GridSpot(1, this, {  x: 3.95, y: 0.51, z: 8.60 } )]
+    ]
+    this.enemyGrid =  [
+      [new GridSpot(2, this, {  x: 3.45, y: 0.51, z: 7.6 } ), new GridSpot(2, this, {  x: 3.70, y: 0.51, z: 7.6 } )],
+      [new GridSpot(2, this, {  x: 3.95, y: 0.51, z: 7.6 } ), new GridSpot(2, this, {  x: 3.45, y: 0.51, z: 7.80 } )],
+      [new GridSpot(2, this, {  x: 3.70, y: 0.51, z: 7.80 } ), new GridSpot(2, this, {  x: 3.95, y: 0.51, z: 7.80 } )]
+    ];
   }
 
   create() {
@@ -31,27 +47,31 @@ export default class BattleScene extends Scene3D {
       grass.wrapS = grass.wrapT = 3 // RepeatWrapping
       grass.offset.set(0, 0)
       grass.repeat.set(50, 50)
+      this.scene.add
 
       // BUG: To add shadows to your ground, set transparent = true
       this.third.physics.add.ground({ width: 20, height: 20,  y: 0 }, { phong: { map: grass, transparent: true } });
     });
-    
-    //Place grid spots
-    const grid1f_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.45, y: 0.51, z: 8.4 } );
-    const grid2f_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.70, y: 0.51, z: 8.4 } );
-    const grid3f_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.95, y: 0.51, z: 8.4 } );
-    const grid1b_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.45, y: 0.51, z: 8.60 } );
-    const grid2b_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.70, y: 0.51, z: 8.60 } );
-    const grid3b_1 = new GridSpot(1, this, { width: 0.25, height: 0.25,  x: 3.95, y: 0.51, z: 8.60 } );
 
-    const grid1f_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.45, y: 0.51, z: 7.6 } );
-    const grid2f_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.70, y: 0.51, z: 7.6 } );
-    const grid3f_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.95, y: 0.51, z: 7.6 } );
-    const grid1b_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.45, y: 0.51, z: 7.80 } );
-    const grid2b_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.70, y: 0.51, z: 7.80 } );
-    const grid3b_2 = new GridSpot(2, this, { width: 0.25, height: 0.25,  x: 3.95, y: 0.51, z: 7.80 } );
-    
+    const monster: Monster = new Monster(
+      "charizard", 
+      { t1: Type.FIRE }, 
+      100, 100, 100, 100, 100, 100, 
+      { m1: Moves.testMove }, 
+      Abilities.TEST, 
+      { 
+        frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
+        backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png'
+      });
+
+    const gameObj = new MonsterGameObj(this, monster, this.playerGrid[0][0]);
+
+    //this.third.scene3D.add.
+    //console.log(gameObj)
+    //console.log(gameObj.getModel());
+    //console.log(gameObj)
   }
+
 
   update(){
     //then your regular game code

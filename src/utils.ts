@@ -1,5 +1,6 @@
 import { BoxConfig, MaterialConfig } from "@enable3d/common/dist/types";
 import Third from "@enable3d/phaser-extension/dist/third";
+import MonsterGameObj from "./gameObjects/monsterGameObject";
 
 
 type modelTypes = "mesh"| "material" | "extrude" | "existing" | "plane" | "ground" | "box" | "sphere" | "cylinder" | "cone" | "torus";

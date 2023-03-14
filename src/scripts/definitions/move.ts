@@ -17,25 +17,27 @@ export class Move
     //what type the move is
     type: Type; 
     //Category: physical, special, status, see: Category class
-    cat: Category;
+    category: Category;
     //Priority: This shouldn't go lower than -4 or higher than 4 but there are no other constraints to it.
     priority: number;
     //array of special secondary effects triggered by the move
     secondaryEffects: SecondaryEffect[];
 
-/*
-    public Move(string nm, string dsc, int pow, int c, Type t, Category ct, int pri, SecondaryEffect[] scFX){
-            name = nm;
-            desc = dsc;
-            cost = c;
-            power = pow;
-            type = t;
-            cat = ct;
-            priority = pri;
-            secondaryEffects = scFX;
+
+    constructor(name: string,  desc: string,  power: number,  cost: number, type: Type, category: Category, priority: number, secondaryFX: SecondaryEffect[]){
+        this.name = name;
+        this.desc = desc;
+        this.APCost = cost;
+        this.power = power;
+        this.type = type;
+        this.category = category;
+        this.priority = priority;
+        this.secondaryEffects = secondaryFX;
     }
-    */
+    
 }
 
 
-
+export const Moves = {
+    testMove: new Move("Test", "Test move", 50, 2, Type.FIRE, Category.SPECIAL, 0, [])
+}

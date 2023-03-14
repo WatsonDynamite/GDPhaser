@@ -54,11 +54,12 @@ export class Monster
     /** The monster's ability */
     ability: Ability;
 
+    sprites: MonsterSpriteSet;
 
-    constructor(name: string, t1: Type, con: number, str: number, arm: number, wis: number, int: number, dex: number, m1: Move, ability: Ability, m2?: Move, m3?: Move, m4?: Move, t2?: Type){
+    constructor(name: string, types: { t1: Type, t2?: Type} , con: number, str: number, arm: number, wis: number, int: number, dex: number, moves: { m1: Move, m2?: Move, m3?: Move, m4?: Move, }, ability: Ability, sprites: MonsterSpriteSet){
         this.name = name;
-        this.type1 = t1;
-        this.type2 = t2;
+        this.type1 = types.t1;
+        this.type2 = types.t2;
         this.maxHP = con;
         this.stats = {
             con: new Stat(con),
@@ -69,11 +70,13 @@ export class Monster
             dex: new StatWithModifier(dex),
         },
         this.currentHP = con; //every monster starts at full health
-        this.move1 = m1;
-        this.move2 = m2;
-        this.move3 = m3;
-        this.move4 = m4;
+        this.move1 = moves.m1;
+        this.move2 = moves.m2;
+        this.move3 = moves.m3;
+        this.move4 = moves.m4;
         this.statusEffect = undefined; //this definitely should not stay "undefined"
+        this.ability = ability;
+        this.sprites = sprites;
     }
 
     /** Lowers the current HP of this monster by the amount specified by DMG.
@@ -113,4 +116,9 @@ export class Monster
     public ApplyStatusEffect(type: StatusEffectIndex, turns: number){ 
         this.statusEffect = new StatusEffect(type, turns);
     }
+}
+
+export type MonsterSpriteSet = {
+    frontSpritePath: string;
+    backSpritePath: string; 
 }

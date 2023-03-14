@@ -2,11 +2,14 @@ import { GameObjects } from "phaser";
 import { PlaneConfig } from "@enable3d/common/dist/types";
 import { ExtendedObject3D, Scene3D, THREE } from '@enable3d/phaser-extension';
 import Third from "@enable3d/phaser-extension/dist/third";
+import MonsterGameObj from "./monsterGameObject";
 
 
 export class GridSpot extends GameObjects.GameObject {
-    public spotModel: ExtendedObject3D;
+    private spotModel: ExtendedObject3D;
     private player: number;
+    private monster: GameObjects.GameObject;
+    private hazard: GameObjects.GameObject;
     third: Third;
 
     constructor(player: number, scene: Scene3D, config?: PlaneConfig | undefined) {
@@ -17,11 +20,25 @@ export class GridSpot extends GameObjects.GameObject {
             spot.minFilter = THREE.NearestFilter;
             spot.magFilter = THREE.NearestFilter;
 
-            scene.third.add.plane(config,  { phong: { map: spot, transparent: true } }).rotateX(1.5);
+            const spotModel = scene.third.add.plane({width: 0.25, height: 0.25, ...config},  { phong: { map: spot, transparent: true } });
+            spotModel.rotateX(1.5);
+            this.spotModel = spotModel;
         });
+    }
+
+    public getModel() {
+        return this.spotModel;
     }
 
     public getPlayer() {
         return this.player;
+    }
+
+    public setMonster(monster: MonsterGameObj){
+        this.monster = monster;
+    }
+
+    public setHazard(hazard: GameObjects.GameObject) {
+        this.hazard = hazard;
     }
 }

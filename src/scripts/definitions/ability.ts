@@ -12,7 +12,7 @@ export class Ability
     frequency: AbilityFrequency;
     secondaryEffects: SecondaryEffect[];
 
-    public Ability(name: string, desc: string, periodicity: number, frequency: AbilityFrequency, effects: SecondaryEffect[]) {
+    constructor(name: string, desc: string, periodicity: number, frequency: AbilityFrequency, effects: SecondaryEffect[]) {
         this.name = name;
         this.desc = desc;
         this.turnCounter = 0;
@@ -21,4 +21,9 @@ export class Ability
         this.secondaryEffects = effects;
     }
 
+}
+
+
+export const Abilities = {
+    TEST: new Ability("test", "a test ability", 1, AbilityFrequency.ABILITY_PERIODIC, [] ),
 }
