@@ -21,4 +21,4 @@ window.addEventListener('load', () => {
   enable3d(() => new Phaser.Game(config)).withPhysics('assets/ammo')
 })
 
-injectReact();
+injectReact()
