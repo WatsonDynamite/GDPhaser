@@ -8,7 +8,9 @@ import { Moves } from '../definitions/move'
 import { Type } from '../definitions/type'
 
 import GifLoader from 'three-gif-loader'
-import { AnimationClip } from 'three'
+import { AnimationClip, Vector3 } from 'three'
+import { blastoise, charizard } from '../data/monsterList'
+import { getScreenPositionFromWorldSpace } from '../../utils'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -20,19 +22,15 @@ export default class BattleScene extends Scene3D {
   private playerGrid
   private enemyGrid
 
+  monster1
+  monster2
+
   init() {
     this.accessThirdDimension()
-    //CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_CHAT_UI);
-    this.playerGrid = [
-      [new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 })],
-      [new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.6 })],
-      [new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.6 }), new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.6 })]
-    ]
-    this.enemyGrid = [
-      [new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.6 }), new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.6 })],
-      [new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.6 }), new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.8 })],
-      [new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.8 })]
-    ]
+
+    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_REACT_CANVAS)
+    //
+    this.setScene()
   }
 
   create() {
@@ -52,73 +50,55 @@ export default class BattleScene extends Scene3D {
 
       // BUG: To add shadows to your ground, set transparent = true
       this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
+      CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_CHAT_UI)
     })
-
-    this.setScene()
-  }
-
-  update() {
-    //then your regular game code
   }
 
   async setScene() {
-    //this.playerGrid = [
-    //  [new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 })],
-    //  [new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.6 }), new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.6 })],
-    //  [(new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.6 }))]
-    //]
-    //this.enemyGrid = [
-    //  [new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.6 }), new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.8 })],
-    //  [new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.6 }), new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.8 })],
-    //  [new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.6 }), new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.8 })]
-    //]
-    // const monster: Monster = new Monster(
-    //   'charizard',
-    //   { t1: Type.FIRE },
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   { m1: Moves.testMove },
-    //   Abilities.TEST,
-    //   {
-    //     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
-    //     backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png'
-    //   }
-    // )
-    //
-    // const monster2: Monster = new Monster(
-    //   'charizard',
-    //   { t1: Type.FIRE },
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   100,
-    //   { m1: Moves.testMove },
-    //   Abilities.TEST,
-    //   {
-    //     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
-    //     backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png'
-    //   }
-    // )
-    //
-    // //const gameObj = new MonsterGameObj(self, monster, this.playerGrid[0][0]
-    //
-    // await this.createMonsterSprite(monster, this.enemyGrid[1][0])
-    // await this.createMonsterSprite(monster2, this.playerGrid[1][0])
-    //monster.SetGameObject(gameObj)
-    //this.third.scene3D.add.
-    //console.log(gameObj)
-    //console.log(gameObj.getModel());
-    //console.log(gameObj)
+    this.playerGrid = [
+      [new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.6 })],
+      [new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.6 })],
+      [(new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.6 }))]
+    ]
+    this.enemyGrid = [
+      [new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.6 })],
+      [new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.6 })],
+      [new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.6 })]
+    ]
+
+    this.monster1 = await this.createMonsterSprite(charizard, this.enemyGrid[1][0])
+    this.monster2 = await this.createMonsterSprite(blastoise, this.playerGrid[1][0])
+    console.log(
+      getScreenPositionFromWorldSpace(
+        this.monster1.getGameObject().position,
+        this.third.camera,
+        this.third.renderer.domElement
+      )
+    )
   }
 
+  update() {
+    //ui events
+    if (this.monster1) {
+      CustomEventDispatcher.getInstance().emit(CustomEvents.RENDER_MONSTER_PLATE, {
+        monster: this.monster1,
+        position: getScreenPositionFromWorldSpace(
+          this.monster1.getGameObject().position,
+          this.third.camera,
+          this.third.renderer.domElement
+        )
+      })
+    }
+  }
+
+  //TODO: eventually move this to be a method of Monster
+  /**
+   *
+   * @param {Monster} monster - the Monster's data struct
+   * @param {GridSpot} grid - the gameobject for the spot in the grid where the monster will spawn
+   */
   async createMonsterSprite(monster: Monster, grid: GridSpot) {
-    // add monster
+    //get sprite
     const {
       sprites: { frontSpritePath, backSpritePath }
     } = monster
@@ -126,7 +106,6 @@ export default class BattleScene extends Scene3D {
     const sizes = grid.getPlayer() === 1 ? { width: 98, height: 83 } : { width: 89, height: 91 }
     const texture = await this.third.load.texture(spritePath)
 
-    // for pixel art use NearestFilter (also see https://stackoverflow.com/a/16709631)
     texture.magFilter = THREE.NearestFilter
     texture.minFilter = THREE.NearestFilter
 
@@ -138,23 +117,11 @@ export default class BattleScene extends Scene3D {
 
     mon.anims.play('idle')
 
-    console.log(mon)
-
     mon.setScale(0.003)
     const { x, y, z } = grid.getModel().position
     mon.position.set(x, y + 0.13, z)
-
+    monster.setGameObject(mon)
     this.third.scene.add(mon)
-
-    setTimeout(() => {
-      mon.anims.play('run')
-    }, 2000)
-
-    setTimeout(() => {
-      mon.anims.play('jump').onComplete(() => {
-        mon.anims.play('idle')
-      })
-    }, 4000)
 
     return monster
   }

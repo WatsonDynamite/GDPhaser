@@ -1,3 +1,4 @@
+import { FLAT } from '@enable3d/phaser-extension'
 import { Sprite } from 'three'
 import MonsterGameObj from '../../gameObjects/monsterGameObject'
 import { Ability } from './ability'
@@ -54,7 +55,7 @@ export class Monster {
 
   sprites: MonsterSpriteSet
 
-  gameObject: Sprite
+  private gameObject: FLAT.SpriteSheet
 
   constructor(
     name: string,
@@ -125,15 +126,31 @@ export class Monster {
    * @param {StatusEffectIndex} type: the type of status effect
    * @param {number} turns: the amount of turns the effect should last
    */
-  public ApplyStatusEffect(type: StatusEffectIndex, turns: number) {
+  public applyStatusEffect(type: StatusEffectIndex, turns: number) {
     this.statusEffect = new StatusEffect(type, turns)
   }
 
-  public SetGameObject(obj: Sprite) {
+  /** Assigns this monster's gameobject (the visual representation in battle).
+   * @param {FLAT.SpriteSheet} spritesheet: the spritesheet object that makes up the animations
+   * @param {number} turns: the amount of turns the effect should last
+   */
+  public setGameObject(obj: FLAT.SpriteSheet) {
     this.gameObject = obj
   }
 
-  public playAtkAnim() {}
+  public getGameObject() {
+    return this.gameObject
+  }
+
+  public playAtkAnim() {
+    if (this.gameObject) {
+      this.gameObject.anims.play('jump').onComplete(() => {
+        this.gameObject.anims.play('idle')
+      })
+    } else {
+      console.error(`monster ${this.name} does not yet have a game object`)
+    }
+  }
 }
 
 export type MonsterSpriteSet = {
