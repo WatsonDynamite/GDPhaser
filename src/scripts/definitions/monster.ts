@@ -1,6 +1,3 @@
-//this file defines the ScriptableObject template for the monsters in the game.
-//it is essentially a "dumb" data structure. No functional purpose, it exists solely for the sake of data storage.
-
 import { Sprite } from 'three'
 import MonsterGameObj from '../../gameObjects/monsterGameObject'
 import { Ability } from './ability'
@@ -142,6 +139,4 @@ export class Monster {
 export type MonsterSpriteSet = {
   frontSpritePath: string
   backSpritePath: string
-  frontSpriteAtkPath: string
-  backSpriteAtkPath: string
 }
