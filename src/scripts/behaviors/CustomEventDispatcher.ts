@@ -17,5 +17,6 @@ export default class CustomEventDispatcher extends Phaser.Events.EventEmitter {
 export enum CustomEvents {
   INIT_REACT_CANVAS = 'init_react_canvas',
   INIT_CHAT_UI = 'init_chat_ui',
+  INIT_BATTLE_UI = 'init_battle_ui',
   RENDER_MONSTER_PLATE = 'render_monster_plate'
 }

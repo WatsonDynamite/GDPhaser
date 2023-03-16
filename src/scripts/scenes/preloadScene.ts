@@ -1,3 +1,5 @@
+import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
+
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' })
@@ -7,6 +9,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   create() {
     this.scene.start('BattleScene')
+    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_REACT_CANVAS)
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),

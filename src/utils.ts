@@ -21,8 +21,11 @@ export function getScreenPositionFromWorldSpace(
   const positionCpy = new Vector3(position.x, position.y, position.z)
   const vector = positionCpy.project(camera)
 
-  vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / window.devicePixelRatio))
-  vector.y = Math.round((0.5 - vector.y / 2) * (canvas.height / window.devicePixelRatio))
+  vector.x = Math.round((0.5 + vector.x / 2) * window.innerWidth)
+  vector.y = Math.round((0.5 - vector.y / 2) * window.innerHeight)
 
-  return new Vector2(vector.x, vector.y)
+  const xPercent = (vector.x / window.innerWidth) * 100
+  const yPercent = (vector.y / window.innerHeight) * 100
+
+  return new Vector2(xPercent, yPercent)
 }

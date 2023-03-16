@@ -8,10 +8,7 @@ const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
   transparent: true,
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1920,
-    height: 1080
+    mode: Phaser.Scale.RESIZE
   },
   scene: [PreloadScene, BattleScene],
   ...Canvas()
