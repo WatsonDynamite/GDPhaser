@@ -1,8 +1,9 @@
 import { FLAT, Scene3D, THREE } from '@enable3d/phaser-extension'
+import _ from 'lodash'
 import { GridSpot } from '../../gameObjects/gridSpot'
 import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
 import { Monster } from '../definitions/monster'
-import { blastoise, charizard } from '../data/monsterList'
+import { blastoise, charizard, venusaur } from '../data/monsterList'
 import { EventEmitter } from 'stream'
 
 export default class BattleScene extends Scene3D {
@@ -12,11 +13,11 @@ export default class BattleScene extends Scene3D {
 
   private EventDispatcher = CustomEventDispatcher.getInstance()
 
-  private playerGrid
-  private enemyGrid
+  private playerGrid: GridSpot[][]
+  private enemyGrid: GridSpot[][]
 
-  monster1
-  monster2
+  p1party: Monster[]
+  p2party: Monster[]
 
   init() {
     this.accessThirdDimension()
@@ -33,13 +34,6 @@ export default class BattleScene extends Scene3D {
     this.third.camera.setRotationFromEuler(
       new THREE.Euler(-0.4963543842116094, 0.3508399919982686, 0.18402730777738688)
     )
-    this.third.camera
-
-    setInterval(() => {
-      const { camera } = this.third
-      console.log(camera.position)
-      console.log(camera.rotation)
-    }, 2000)
 
     this.third.load.preload('grass', '/assets/materials/grass.jpg')
     this.third.load.texture('grass').then((grass) => {
@@ -49,50 +43,91 @@ export default class BattleScene extends Scene3D {
 
       // BUG: To add shadows to your ground, set transparent = true
       this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
-      this.EventDispatcher.emit(CustomEvents.INIT_CHAT_UI)
     })
   }
 
   async setScene() {
-    const { EventDispatcher } = this
-    try {
-      this.playerGrid = [
-        [new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.45, y: 0.51, z: 8.6 })],
-        [new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.7, y: 0.51, z: 8.6 })],
-        [(new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.4 }), new GridSpot(1, this, { x: 3.95, y: 0.51, z: 8.6 }))]
+    const initialSetup = async () => {
+      const playerGrid = [
+        [
+          new GridSpot(1, 'front', this, { x: 3.45, y: 0.51, z: 8.4 }),
+          new GridSpot(1, 'back', this, { x: 3.45, y: 0.51, z: 8.6 })
+        ],
+        [
+          new GridSpot(1, 'front', this, { x: 3.7, y: 0.51, z: 8.4 }),
+          new GridSpot(1, 'back', this, { x: 3.7, y: 0.51, z: 8.6 })
+        ],
+        [
+          new GridSpot(1, 'front', this, { x: 3.95, y: 0.51, z: 8.4 }),
+          new GridSpot(1, 'back', this, { x: 3.95, y: 0.51, z: 8.6 })
+        ]
       ]
-      this.enemyGrid = [
-        [new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.95, y: 0.51, z: 7.6 })],
-        [new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.7, y: 0.51, z: 7.6 })],
-        [new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.8 }), new GridSpot(2, this, { x: 3.45, y: 0.51, z: 7.6 })]
+      const enemyGrid = [
+        [
+          new GridSpot(2, 'front', this, { x: 3.95, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.95, y: 0.51, z: 7.6 })
+        ],
+        [
+          new GridSpot(2, 'front', this, { x: 3.7, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.7, y: 0.51, z: 7.6 })
+        ],
+        [
+          new GridSpot(2, 'front', this, { x: 3.45, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.45, y: 0.51, z: 7.6 })
+        ]
       ]
 
-      this.createMonsterSprite(charizard, this.playerGrid[1][0]).then((monster) => {
-        this.monster1 = monster
-        EventDispatcher.emit(CustomEvents.RENDER_MONSTER_PLATE, {
-          monster: monster,
-          camera: this.third.camera,
-          canvas: this.third.renderer.domElement
-        })
-      })
+      const p1party = _.cloneDeep([venusaur, blastoise, charizard])
+      const p2party = _.cloneDeep([charizard, venusaur, blastoise])
 
-      this.createMonsterSprite(blastoise, this.enemyGrid[1][0]).then((monster) => {
-        this.monster2 = monster
-        EventDispatcher.emit(CustomEvents.RENDER_MONSTER_PLATE, {
-          monster: monster,
-          camera: this.third.camera,
-          canvas: this.third.renderer.domElement
-        })
-      })
-    } finally {
-      EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI)
+      for (let i = 0; i < 3; i++) {
+        const spritep1 = await this.createMonsterSprite(p1party[i], playerGrid[i][0])
+        playerGrid[i][0].setMonster(spritep1)
+
+        const spritep2 = await this.createMonsterSprite(p2party[i], enemyGrid[i][0])
+        enemyGrid[i][0].setMonster(spritep2)
+      }
+
+      this.playerGrid = playerGrid
+      this.enemyGrid = enemyGrid
+      this.p1party = p1party
+      this.p2party = p2party
     }
+
+    await initialSetup()
+    this.EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI, this)
   }
 
   update() {
     //ui events
-    if (this.monster1) {
+    //if (this.monster1) {
+    //}
+  }
+
+  getFieldMonsters() {
+    const foundMonsters: {
+      myMonsters: Monster[]
+      enemyMonsters: Monster[]
+    } = {
+      myMonsters: [],
+      enemyMonsters: []
     }
+
+    this.playerGrid.forEach((items: GridSpot[]) => {
+      items.forEach((el) => {
+        const mon = el.getMonster()
+        if (mon) foundMonsters.myMonsters.push(mon)
+      })
+    })
+
+    this.enemyGrid.forEach((items: GridSpot[]) => {
+      items.forEach((el) => {
+        const mon = el.getMonster()
+        if (mon) foundMonsters.enemyMonsters.push(mon)
+      })
+    })
+
+    return foundMonsters
   }
 
   //TODO: eventually move this to be a method of Monster
@@ -110,6 +145,7 @@ export default class BattleScene extends Scene3D {
     const sizes = grid.getPlayer() === 1 ? { width: 98, height: 83 } : { width: 89, height: 91 }
     const texture = await this.third.load.texture(spritePath)
 
+    //if the sprite is blurry, then use the "remove duplicates" flag on aseprite's spritesheet export
     texture.magFilter = THREE.NearestFilter
     texture.minFilter = THREE.NearestFilter
 
@@ -121,7 +157,7 @@ export default class BattleScene extends Scene3D {
 
     mon.anims.play('idle')
 
-    mon.setScale(0.0025)
+    mon.setScale(0.0027)
     const { x, y, z } = grid.getModel().position
     mon.position.set(x, y + 0.11, z)
     monster.setGameObject(mon)

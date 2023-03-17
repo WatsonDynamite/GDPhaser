@@ -5,7 +5,7 @@ import { Type } from '../definitions/type'
 
 export const charizard = new Monster(
   'charizard',
-  { t1: Type.FIRE },
+  { t1: Type.FIRE, t2: Type.WIND },
   100,
   100,
   100,
@@ -22,7 +22,7 @@ export const charizard = new Monster(
 
 export const blastoise = new Monster(
   'blastoise',
-  { t1: Type.FIRE },
+  { t1: Type.WATER },
   100,
   100,
   100,
@@ -32,7 +32,24 @@ export const blastoise = new Monster(
   { m1: Moves.testMove },
   Abilities.TEST,
   {
-    frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
-    backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png'
+    frontSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_f.png',
+    backSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_b.png'
+  }
+)
+
+export const venusaur = new Monster(
+  'venusaur',
+  { t1: Type.NATURE, t2: Type.TOXIC },
+  100,
+  100,
+  100,
+  100,
+  100,
+  100,
+  { m1: Moves.testMove },
+  Abilities.TEST,
+  {
+    frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
+    backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png'
   }
 )

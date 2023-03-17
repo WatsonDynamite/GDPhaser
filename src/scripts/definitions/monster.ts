@@ -1,5 +1,6 @@
 import { FLAT } from '@enable3d/phaser-extension'
 import { Sprite } from 'three'
+import { GridSpot } from '../../gameObjects/gridSpot'
 import MonsterGameObj from '../../gameObjects/monsterGameObject'
 import { Ability } from './ability'
 import { StatusEffectIndex } from './enums'
@@ -55,6 +56,8 @@ export class Monster {
 
   sprites: MonsterSpriteSet
 
+  private gridSpot: GridSpot
+
   private gameObject: FLAT.SpriteSheet
 
   constructor(
@@ -95,7 +98,7 @@ export class Monster {
   /** Lowers the current HP of this monster by the amount specified by DMG.
    * @param dmg: value to damage the monster with
    */
-  public receiveDamage(dmg: number) {
+  receiveDamage(dmg: number) {
     this.currentHP -= dmg
     if (this.currentHP < 0) {
       this.currentHP = 0
@@ -105,7 +108,7 @@ export class Monster {
   /** Raises the current HP of this monster by the amount specified by DMG.
    * @param dmg: value to heal the monster with
    * */
-  public healDamage(dmg: number) {
+  healDamage(dmg: number) {
     this.currentHP += dmg
     if (this.currentHP > this.maxHP) {
       this.currentHP = this.maxHP
@@ -113,7 +116,7 @@ export class Monster {
   }
 
   /** @returns an array of the moves known by this monster. */
-  public getMoves(): Move[] {
+  getMoves(): Move[] {
     const moves: Move[] = []
     moves.push(this.move1)
     if (this.move2) moves.push(this.move2)
@@ -126,7 +129,7 @@ export class Monster {
    * @param {StatusEffectIndex} type: the type of status effect
    * @param {number} turns: the amount of turns the effect should last
    */
-  public applyStatusEffect(type: StatusEffectIndex, turns: number) {
+  applyStatusEffect(type: StatusEffectIndex, turns: number) {
     this.statusEffect = new StatusEffect(type, turns)
   }
 
@@ -134,15 +137,23 @@ export class Monster {
    * @param {FLAT.SpriteSheet} spritesheet: the spritesheet object that makes up the animations
    * @param {number} turns: the amount of turns the effect should last
    */
-  public setGameObject(obj: FLAT.SpriteSheet) {
+  setGameObject(obj: FLAT.SpriteSheet) {
     this.gameObject = obj
   }
 
-  public getGameObject() {
+  setGridSpot(obj: GridSpot) {
+    this.gridSpot = obj
+  }
+
+  getGridSpot() {
+    return this.gridSpot
+  }
+
+  getGameObject() {
     return this.gameObject
   }
 
-  public playAtkAnim() {
+  playAtkAnim() {
     if (this.gameObject) {
       this.gameObject.anims.play('jump').onComplete(() => {
         this.gameObject.anims.play('idle')

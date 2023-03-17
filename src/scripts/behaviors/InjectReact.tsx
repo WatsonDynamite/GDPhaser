@@ -1,9 +1,11 @@
 import React from 'react'
 import * as ReactDOM from 'react-dom'
 import { createRoot, Root } from 'react-dom/client'
-import Chat from '../../components/Chat'
+import BattleUI from '../../components/BattleScene/BattleUI'
+import Chat from '../../components/BattleScene/Chat'
 import FullScreenContainer from '../../components/FullScreenContainer'
-import MonsterPlate, { MonsterPlateProps } from '../../components/MonsterPlate'
+import MonsterPlate, { MonsterPlateProps } from '../../components/BattleScene/MonsterPlate'
+import BattleScene from '../scenes/battleScene'
 import CustomEventDispatcher, { CustomEvents } from './CustomEventDispatcher'
 
 export default function injectReact() {
@@ -11,10 +13,10 @@ export default function injectReact() {
 }
 
 let root = createRoot(document.getElementById('react-root')!)
-let canvas = root.render(<FullScreenContainer />)
+//let canvas = root.render(<FullScreenContainer />)
 
-const emmiter = CustomEventDispatcher.getInstance()
+const events = CustomEventDispatcher.getInstance()
 
-//emmiter.on(CustomEvents.INIT_REACT_CANVAS, () => injectCanvas())
-//emmiter.on(CustomEvents.INIT_CHAT_UI, () => injectComponent(Chat))
-//emmiter.on(CustomEvents.RENDER_MONSTER_PLATE, (args: MonsterPlateProps) => injectComponent(MonsterPlate, args))
+events.on(CustomEvents.INIT_BATTLE_UI, (battleScene: BattleScene) =>
+  root.render(<BattleUI battleScene={battleScene} />)
+)
