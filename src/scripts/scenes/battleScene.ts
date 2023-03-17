@@ -27,7 +27,7 @@ export default class BattleScene extends Scene3D {
   create() {
     // creates a nice scene
     this.third.warpSpeed('-orbitControls', '-grid', '-lookAtCenter', '-ground')
-    this.third.camera.translateX(4.200205939552442)
+    this.third.camera.translateX(4.300205939552442)
     this.third.camera.translateY(-5.13945596907)
     this.third.camera.translateZ(-2.95216046263)
 
@@ -64,16 +64,16 @@ export default class BattleScene extends Scene3D {
       ]
       const enemyGrid = [
         [
-          new GridSpot(2, 'front', this, { x: 3.95, y: 0.51, z: 7.8 }),
-          new GridSpot(2, 'back', this, { x: 3.95, y: 0.51, z: 7.6 })
+          new GridSpot(2, 'front', this, { x: 3.95 + 0.15, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.95 + 0.23, y: 0.51, z: 7.6 })
         ],
         [
-          new GridSpot(2, 'front', this, { x: 3.7, y: 0.51, z: 7.8 }),
-          new GridSpot(2, 'back', this, { x: 3.7, y: 0.51, z: 7.6 })
+          new GridSpot(2, 'front', this, { x: 3.7 + 0.15, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.7 + 0.23, y: 0.51, z: 7.6 })
         ],
         [
-          new GridSpot(2, 'front', this, { x: 3.45, y: 0.51, z: 7.8 }),
-          new GridSpot(2, 'back', this, { x: 3.45, y: 0.51, z: 7.6 })
+          new GridSpot(2, 'front', this, { x: 3.45 + 0.15, y: 0.51, z: 7.8 }),
+          new GridSpot(2, 'back', this, { x: 3.45 + 0.23, y: 0.51, z: 7.6 })
         ]
       ]
 
@@ -141,8 +141,9 @@ export default class BattleScene extends Scene3D {
     const {
       sprites: { frontSpritePath, backSpritePath }
     } = monster
-    const spritePath = grid.getPlayer() === 1 ? backSpritePath : frontSpritePath
-    const sizes = grid.getPlayer() === 1 ? { width: 98, height: 83 } : { width: 89, height: 91 }
+    const isPlayer1 = grid.getPlayer() === 1
+    const spritePath = isPlayer1 ? backSpritePath : frontSpritePath
+    const sizes = isPlayer1 ? { width: 98, height: 83 } : { width: 89, height: 91 }
     const texture = await this.third.load.texture(spritePath)
 
     //if the sprite is blurry, then use the "remove duplicates" flag on aseprite's spritesheet export

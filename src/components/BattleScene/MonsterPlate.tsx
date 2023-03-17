@@ -66,7 +66,7 @@ const PlateContainer = styled.div<{ x: number; y: number }>`
   padding: 5px 5px;
   width: 150px;
   position: absolute !important;
-  left: ${({ x }) => x - 4}vw;
+  left: ${({ x }) => x - 2}vw;
   top: ${({ y }) => y + 3}vh;
 
   > h1 {
