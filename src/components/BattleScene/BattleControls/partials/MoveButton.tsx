@@ -2,12 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import { Move } from '../../../../scripts/definitions/move'
 
-export default function MoveButton({ move }: { move: Move | undefined }) {
+export default function MoveButton({ move, onClick }: { move: Move | undefined; onClick: Function }) {
   if (!move) return null
 
   const { name, type, APCost, power } = move
   return (
-    <Button>
+    <Button onClick={() => onClick()}>
       <ButtonGrid>
         <div>
           {name} - {type}

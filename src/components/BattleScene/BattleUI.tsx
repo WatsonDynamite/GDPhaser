@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
 import { Monster } from '../../scripts/definitions/monster'
 import BattleScene from '../../scripts/scenes/battleScene'
 import FullScreenContainerDiv from '../FullScreenContainer'
@@ -19,19 +20,47 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
   } = battleScene
 
   const { myMonsters, enemyMonsters } = battleScene.getFieldMonsters()!
-  console.log(myMonsters)
-  console.log(enemyMonsters)
+
+  const [currentMonster, setCurrentMonster] = useState<number>(0)
+  const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
+
+  function handleTurnQueue() {
+    if (currentMonster === myMonsters.length - 1) {
+      //time to send the move queue to the server
+      if (myMonsters[0]) setCurrentMonster(0)
+      setIsShowingUI(false)
+    } else {
+      if (myMonsters[currentMonster + 1]) {
+        setCurrentMonster(currentMonster + 1)
+      }
+    }
+  }
+
+  console.log(isShowingUI)
+  console.log(currentMonster)
+  console.log(myMonsters.length)
+
+  CustomEventDispatcher.getInstance().on(CustomEvents.QUEUE_TURN_ACTION, () => {
+    handleTurnQueue()
+    console.log('hit')
+  })
+  CustomEventDispatcher.getInstance().on(CustomEvents.SHOW_BATTLE_UI, () => {
+    setIsShowingUI(true)
+  })
+  CustomEventDispatcher.getInstance().on(CustomEvents.HIDE_BATTLE_UI, () => {
+    setIsShowingUI(false)
+  })
 
   return (
     <FullScreenContainerDiv>
       <Chat />
       {myMonsters.map((monster: Monster) => (
-        <MonsterPlate monster={monster} camera={camera} canvas={domElement} />
+        <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
       ))}
       {enemyMonsters.map((monster: Monster) => (
-        <MonsterPlate monster={monster} camera={camera} canvas={domElement} />
+        <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
       ))}
-      <BattleControls monster={myMonsters[0]} />
+      {isShowingUI && <BattleControls monster={myMonsters[currentMonster]} />}
     </FullScreenContainerDiv>
   )
 }

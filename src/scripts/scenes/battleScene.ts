@@ -5,6 +5,7 @@ import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDis
 import { Monster } from '../definitions/monster'
 import { blastoise, charizard, venusaur } from '../data/monsterList'
 import { EventEmitter } from 'stream'
+import { TurnAction } from '../definitions/turnAction'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -19,7 +20,10 @@ export default class BattleScene extends Scene3D {
   p1party: Monster[]
   p2party: Monster[]
 
+  actionQueue: TurnAction[]
+
   init() {
+    this.actionQueue = []
     this.accessThirdDimension()
     this.setScene()
   }
@@ -130,7 +134,8 @@ export default class BattleScene extends Scene3D {
     return foundMonsters
   }
 
-  //TODO: eventually move this to be a method of Monster
+  executeTurnActions() {}
+
   /**
    *
    * @param {Monster} monster - the Monster's data struct

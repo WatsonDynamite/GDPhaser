@@ -1,6 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
+import CustomEventDispatcher, { CustomEvents } from '../../../scripts/behaviors/CustomEventDispatcher'
 import { Monster } from '../../../scripts/definitions/monster'
+import { Move } from '../../../scripts/definitions/move'
+import { TurnActionMove } from '../../../scripts/definitions/turnAction'
 import APMeter from '../APMeter'
 import GridControls from './partials/GridControls'
 import MoveButton from './partials/MoveButton'
@@ -8,15 +11,23 @@ import MoveButton from './partials/MoveButton'
 export default function BattleControls({ monster }: { monster: Monster }) {
   const { move1, move2, move3, move4 } = monster
 
+  function onMoveSelect(move: Move | undefined) {
+    if (move)
+      CustomEventDispatcher.getInstance().emit(
+        CustomEvents.QUEUE_TURN_ACTION,
+        new TurnActionMove(move, monster, monster)
+      )
+  }
+
   return (
     <Container>
       <APMeter />
       <GridControls />
       <MoveGrid>
-        <MoveButton move={move1} />
-        <MoveButton move={move2} />
-        <MoveButton move={move3} />
-        <MoveButton move={move4} />
+        <MoveButton onClick={() => onMoveSelect(move1)} move={move1} />
+        <MoveButton onClick={() => onMoveSelect(move2)} move={move2} />
+        <MoveButton onClick={() => onMoveSelect(move3)} move={move3} />
+        <MoveButton onClick={() => onMoveSelect(move4)} move={move4} />
       </MoveGrid>
     </Container>
   )

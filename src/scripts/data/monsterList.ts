@@ -1,7 +1,7 @@
 import { Abilities } from '../definitions/ability'
 import { Monster } from '../definitions/monster'
-import { Moves } from '../definitions/move'
 import { Type } from '../definitions/type'
+import { Moves } from './moveList'
 
 export const charizard = new Monster(
   'charizard',
@@ -12,7 +12,7 @@ export const charizard = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMove },
+  { m1: Moves.testMoveFire },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
@@ -29,7 +29,7 @@ export const blastoise = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMove },
+  { m1: Moves.testMoveWater },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_f.png',
@@ -46,7 +46,7 @@ export const venusaur = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMove },
+  { m1: Moves.testMoveNature },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
