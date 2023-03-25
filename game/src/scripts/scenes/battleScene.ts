@@ -7,6 +7,7 @@ import { blastoise, charizard, venusaur } from '../data/monsterList'
 import { EventEmitter } from 'stream'
 import { TurnAction } from '../definitions/turnAction'
 import { io } from 'socket.io-client'
+
 export default class BattleScene extends Scene3D {
   constructor() {
     super({ key: 'BattleScene' })
@@ -24,11 +25,12 @@ export default class BattleScene extends Scene3D {
 
   socketClient
 
-  init() {
+  init(data) {
     this.actionQueue = []
     this.accessThirdDimension()
     this.setScene()
-    this.socketClient = io('localhost:3002')
+    console.log(data)
+    this.socketClient = data.socketClient
   }
 
   create() {

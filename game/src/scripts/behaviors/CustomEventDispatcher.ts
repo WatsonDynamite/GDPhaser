@@ -15,9 +15,13 @@ export default class CustomEventDispatcher extends Phaser.Events.EventEmitter {
 }
 
 export enum CustomEvents {
-  INIT_REACT_CANVAS = 'init_react_canvas',
-  INIT_BATTLE_UI = 'init_battle_ui',
-  HIDE_BATTLE_UI = 'hide_battle_ui',
-  SHOW_BATTLE_UI = 'show_battle_ui',
+  INIT_REACT_CANVAS = 'init_react_canvas', //starts react canvas on game boot
+  INIT_BATTLE_UI = 'init_battle_ui', //injects battle scene UI
+  HIDE_BATTLE_UI = 'hide_battle_ui', //tells battle scene UI to hide itself
+  SHOW_BATTLE_UI = 'show_battle_ui', //tells battle scene UI to show itself
+  INIT_CONNECT_UI = 'init_connect_ui', //injects connection screen UI
+
+  INIT_BATTLE_SCENE = 'init_battle_scene', //tells scene manager to load battle scene
+
   QUEUE_TURN_ACTION = 'queue_turn_action'
 }

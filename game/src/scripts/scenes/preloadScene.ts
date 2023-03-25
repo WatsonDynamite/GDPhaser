@@ -5,11 +5,13 @@ export default class PreloadScene extends Phaser.Scene {
     super({ key: 'PreloadScene' })
   }
 
-  preload() {}
+  preload() {
+    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_REACT_CANVAS)
+  }
 
   create() {
-    this.scene.start('BattleScene')
-    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_REACT_CANVAS)
+    //this.scene.start('BattleScene')
+    this.scene.start('ConnectToServerScene')
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),

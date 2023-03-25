@@ -19,6 +19,6 @@ server.listen(3002, () => {
   console.log("listening on *:3002");
 });
 
-io.on("connection", () => {
-  console.log("a user connected");
+io.on("connection", (socket) => {
+  console.log("a user connected with id: " + socket.id);
 });
