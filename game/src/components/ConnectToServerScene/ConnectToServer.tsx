@@ -13,14 +13,16 @@ export type ConnectToServerProps = {
 
 export default function ConnectToServer({ scene }: ConnectToServerProps) {
   const [username, setUserName] = React.useState<string>('')
-  const [ipAddr, setIpAddr] = React.useState<string>('')
+  const [ipAddr, setIpAddr] = React.useState<string>('localhost:3002')
   const [isErr, setIsErr] = React.useState<boolean>(false)
   const [isSuccess, setIsSuccess] = React.useState<boolean>(false)
 
   function handleConnect() {
     //CustomEventDispatcher.getInstance().emit(CustomEvents)
 
-    const socketClient = io(ipAddr)
+    const socketClient = io(ipAddr, { autoConnect: false })
+    socketClient.auth = { username }
+    socketClient.connect()
     socketClient.on('connect', () => {
       setIsErr(false)
       setIsSuccess(true)
@@ -30,10 +32,6 @@ export default function ConnectToServer({ scene }: ConnectToServerProps) {
       setIsSuccess(false)
       setIsErr(true)
     })
-    //if (socketClient.connected) {
-    //} else {
-    //  setIsErr(true)
-    //}
   }
 
   return (
@@ -42,9 +40,9 @@ export default function ConnectToServer({ scene }: ConnectToServerProps) {
         <img src={logogif} />
 
         <div>Player Name</div>
-        <input onChange={(e) => setUserName(e.currentTarget.value)}></input>
+        <input value={username} onChange={(e) => setUserName(e.currentTarget.value)}></input>
         <div>server IP</div>
-        <input onChange={(e) => setIpAddr(e.currentTarget.value)}></input>
+        <input value={ipAddr} onChange={(e) => setIpAddr(e.currentTarget.value)}></input>
         <button onClick={handleConnect} disabled={username === '' || ipAddr === ''}>
           CONNECT
         </button>

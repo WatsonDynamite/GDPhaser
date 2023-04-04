@@ -1,13 +1,53 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { Socket } from 'socket.io-client'
 import styled from 'styled-components'
 
-export default function Chat() {
+type ChatProps = {
+  socketClient: Socket
+}
+
+type Message = {
+  user: string
+  message: string
+}
+
+export default function Chat({ socketClient }: ChatProps) {
+  const [input, setInput] = React.useState('')
+  const [messages, setMessages] = React.useState<Message[]>([])
+
+  function handleSendMessage() {
+    socketClient.emit('chatMessage', { user: socketClient.auth['username'], message: input })
+    setInput('')
+  }
+
+  socketClient.on('loadChatHistory', (data) => {
+    setMessages([...data])
+  })
+
+  useEffect(() => {
+    socketClient.on('chatMessage', (data: Message) => {
+      setMessages((old) => {
+        const newMsgs = [...old]
+        newMsgs.push(data)
+        return newMsgs
+      })
+    })
+  }, [socketClient])
+
   return (
     <ChatContainer>
-      <Content />
+      <Content>
+        {messages.map((msg: Message, idx) => {
+          return (
+            <div key={`${msg.user} - ${idx}`}>
+              {msg.user}: {msg.message}
+            </div>
+          )
+        })}
+      </Content>
       <Chatbox>
-        <input />
-        <button>Send</button>
+        <input value={input} onChange={(e) => setInput(e.currentTarget.value)} />
+        <button onClick={() => handleSendMessage()}>Send</button>
       </Chatbox>
     </ChatContainer>
   )
@@ -27,6 +67,7 @@ const ChatContainer = styled.div`
 
 const Content = styled.div`
   height: 95%;
+  padding-top: 15px;
 `
 
 const Chatbox = styled.div`

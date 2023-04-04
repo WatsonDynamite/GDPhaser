@@ -49,6 +49,7 @@
     "phaser": "~3.55.2",
     "poly-decomp": "^0.3.0",
     "react": "^18.2.0",
+    "react-animated-ellipsis": "^1.0.0",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "styled-components": "^5.3.8",

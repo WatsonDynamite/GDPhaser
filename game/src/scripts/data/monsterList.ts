@@ -1,9 +1,11 @@
 import { Abilities } from '../definitions/ability'
-import { Monster } from '../definitions/monster'
+import { Monster, MonsterServerData } from '../definitions/monster'
 import { Type } from '../definitions/type'
 import { Moves } from './moveList'
+import _ from 'lodash'
 
 export const charizard = new Monster(
+  'test-charizard',
   'charizard',
   { t1: Type.FIRE, t2: Type.WIND },
   100,
@@ -21,6 +23,7 @@ export const charizard = new Monster(
 )
 
 export const blastoise = new Monster(
+  'test-blastoise',
   'blastoise',
   { t1: Type.WATER },
   100,
@@ -38,6 +41,7 @@ export const blastoise = new Monster(
 )
 
 export const venusaur = new Monster(
+  'test-venusaur',
   'venusaur',
   { t1: Type.NATURE, t2: Type.TOXIC },
   100,
@@ -53,3 +57,16 @@ export const venusaur = new Monster(
     backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png'
   }
 )
+
+const monsterList = {
+  [charizard.id]: charizard,
+  [blastoise.id]: blastoise,
+  [venusaur.id]: venusaur
+}
+
+export function InstanceMonsterFromServerData(data: MonsterServerData): Monster {
+  const { id, currentHP } = data
+  const monster: Monster = _.cloneDeep(monsterList[id]) as Monster
+  monster.setMonsterState(currentHP)
+  return monster
+}

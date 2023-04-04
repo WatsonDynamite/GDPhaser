@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
 import { Monster } from '../../scripts/definitions/monster'
 import BattleScene from '../../scripts/scenes/battleScene'
@@ -16,10 +16,11 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
     third: {
       camera,
       renderer: { domElement }
-    }
+    },
+    socketClient
   } = battleScene
 
-  const { myMonsters, enemyMonsters } = battleScene.getFieldMonsters()!
+  const { myMonsters, enemyMonsters } = battleScene.getFieldMonsters()
 
   const [currentMonster, setCurrentMonster] = useState<number>(0)
   const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
@@ -36,10 +37,6 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
     }
   }
 
-  console.log(isShowingUI)
-  console.log(currentMonster)
-  console.log(myMonsters.length)
-
   CustomEventDispatcher.getInstance().on(CustomEvents.QUEUE_TURN_ACTION, () => {
     handleTurnQueue()
     console.log('hit')
@@ -53,7 +50,7 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
 
   return (
     <FullScreenContainerDiv>
-      <Chat />
+      <Chat socketClient={socketClient} />
       {myMonsters.map((monster: Monster) => (
         <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
       ))}

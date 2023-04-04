@@ -20,6 +20,7 @@ export enum CustomEvents {
   HIDE_BATTLE_UI = 'hide_battle_ui', //tells battle scene UI to hide itself
   SHOW_BATTLE_UI = 'show_battle_ui', //tells battle scene UI to show itself
   INIT_CONNECT_UI = 'init_connect_ui', //injects connection screen UI
+  INIT_WAITING_FOR_PLAYERS_UI = 'init_waiting_for_players_ui', //injects "waiting for players..." UI
 
   INIT_BATTLE_SCENE = 'init_battle_scene', //tells scene manager to load battle scene
 

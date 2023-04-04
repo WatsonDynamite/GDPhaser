@@ -11,7 +11,7 @@ export class GridSpot extends GameObjects.GameObject {
     player: number
     position: 'front' | 'back'
   }
-  private monster: Monster
+  private monster: Monster | null
   private hazard: GameObjects.GameObject
   third: Third
 

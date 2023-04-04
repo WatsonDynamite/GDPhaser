@@ -1,7 +1,5 @@
 import { FLAT } from '@enable3d/phaser-extension'
-import { Sprite } from 'three'
 import { GridSpot } from '../../gameObjects/gridSpot'
-import MonsterGameObj from '../../gameObjects/monsterGameObject'
 import { Ability } from './ability'
 import { StatusEffectIndex } from './enums'
 import { Move } from './move'
@@ -14,8 +12,10 @@ import { Type } from './type'
  * Everything comes from this
  */
 export class Monster {
-  /** id, for teambuilder serialization purposes */
-  id: number
+  //NON VOLATILE DATA
+
+  /** id, for teambuilder and server purposes */
+  id: string
   /** name of the monster */
   name: string
   /** primary type of the monster */
@@ -28,10 +28,6 @@ export class Monster {
 
   /** max health value (used for healing calculations and to display to the user). DO NOT CONFUSE WITH THE HP STAT ITSELF, BECAUSE I SURE DID. */
   maxHP: number
-  /** the current HP value. Think of this variable as the actual "life bar". */
-  currentHP: number
-  /** status effect that the monster is currently afflicted with, if any */
-  statusEffect?: StatusEffect
 
   /** The stats of the monster */
   stats: {
@@ -56,11 +52,19 @@ export class Monster {
 
   sprites: MonsterSpriteSet
 
+  //VOLATILE DATA
+
   private gridSpot: GridSpot
 
   private gameObject: FLAT.SpriteSheet
 
+  /** the current HP value. Think of this variable as the actual life bar. */
+  currentHP: number
+  /** status effect that the monster is currently afflicted with, if any */
+  statusEffect?: StatusEffect
+
   constructor(
+    id: string,
     name: string,
     types: { t1: Type; t2?: Type },
     con: number,
@@ -73,6 +77,7 @@ export class Monster {
     ability: Ability,
     sprites: MonsterSpriteSet
   ) {
+    this.id = id
     this.name = name
     this.type1 = types.t1
     this.type2 = types.t2
@@ -90,9 +95,17 @@ export class Monster {
     this.move2 = moves.m2
     this.move3 = moves.m3
     this.move4 = moves.m4
-    this.statusEffect = undefined //this definitely should not stay "undefined"
+    this.statusEffect = undefined //this definitely should not stay undefined
     this.ability = ability
     this.sprites = sprites
+  }
+
+  /**
+   * Used only for server syncing. Directly sets monster battle state
+   */
+
+  setMonsterState(curHP: number) {
+    this.currentHP = curHP
   }
 
   /** Lowers the current HP of this monster by the amount specified by DMG.
@@ -167,4 +180,9 @@ export class Monster {
 export type MonsterSpriteSet = {
   frontSpritePath: string
   backSpritePath: string
+}
+
+export type MonsterServerData = {
+  id: string
+  currentHP: number
 }

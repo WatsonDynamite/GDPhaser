@@ -2,11 +2,12 @@ import { FLAT, Scene3D, THREE } from '@enable3d/phaser-extension'
 import _ from 'lodash'
 import { GridSpot } from '../../gameObjects/gridSpot'
 import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
-import { Monster } from '../definitions/monster'
-import { blastoise, charizard, venusaur } from '../data/monsterList'
+import { Monster, MonsterServerData } from '../definitions/monster'
+import { blastoise, charizard, InstanceMonsterFromServerData, venusaur } from '../data/monsterList'
 import { EventEmitter } from 'stream'
 import { TurnAction } from '../definitions/turnAction'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
+import { GameState } from '../definitions/serverPayloads'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -15,25 +16,65 @@ export default class BattleScene extends Scene3D {
 
   private EventDispatcher = CustomEventDispatcher.getInstance()
 
+  //
   private playerGrid: GridSpot[][]
   private enemyGrid: GridSpot[][]
 
-  p1party: Monster[]
-  p2party: Monster[]
+  playerparty: Monster[]
+  enemyparty: Monster[]
 
+  //who this player is in the server
+  //in the client, the player is always player 1 and the opponent is always player 2
+  //but in the server this might not be the case.
+  //for the players to get the correct information, we need to know who's who
+  private whoami: number
+
+  //actions to send to the server
   actionQueue: TurnAction[]
 
-  socketClient
+  //socket.io client
+  socketClient: Socket
 
   init(data) {
     this.actionQueue = []
     this.accessThirdDimension()
-    this.setScene()
-    console.log(data)
-    this.socketClient = data.socketClient
+    this.setScene(() => {
+      this.socketClient = data.socketClient
+      this.socketClient.on('youAre', (data) => (this.whoami = data))
+
+      const playerMonsterDataForServer: { monster: MonsterServerData; row: number; col: number }[] = []
+
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 2; col++) {
+          const gridSpot = this.playerGrid[row][col]
+          const monster = gridSpot.getMonster()
+
+          if (monster) {
+            playerMonsterDataForServer.push({
+              monster: {
+                id: monster.id,
+                currentHP: monster.currentHP
+              },
+              row,
+              col
+            })
+          }
+        }
+      }
+
+      this.socketClient.emit('initData', {
+        user: data.username,
+        grid: playerMonsterDataForServer
+      })
+      this.socketClient.on('refreshGameState', (data) => this.refreshGameState(data))
+      this.socketClient.on('gameReady', () => {
+        this.EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI, this)
+      })
+    })
   }
 
   create() {
+    this.EventDispatcher.emit(CustomEvents.INIT_WAITING_FOR_PLAYERS_UI)
     // creates a nice scene
     this.third.warpSpeed('-orbitControls', '-grid', '-lookAtCenter', '-ground')
     this.third.camera.translateX(4.300205939552442)
@@ -55,7 +96,7 @@ export default class BattleScene extends Scene3D {
     })
   }
 
-  async setScene() {
+  async setScene(callback: Function) {
     const initialSetup = async () => {
       const playerGrid = [
         [
@@ -86,25 +127,27 @@ export default class BattleScene extends Scene3D {
         ]
       ]
 
-      const p1party = _.cloneDeep([venusaur, blastoise, charizard])
-      const p2party = _.cloneDeep([charizard, venusaur, blastoise])
+      const playerparty = _.cloneDeep([venusaur, blastoise, charizard])
+      //const enemyparty = _.cloneDeep([charizard, venusaur, blastoise])
 
       for (let i = 0; i < 3; i++) {
-        const spritep1 = await this.createMonsterSprite(p1party[i], playerGrid[i][0])
+        const spritep1 = await this.createMonsterSprite(playerparty[i], playerGrid[i][0])
         playerGrid[i][0].setMonster(spritep1)
 
-        const spritep2 = await this.createMonsterSprite(p2party[i], enemyGrid[i][0])
-        enemyGrid[i][0].setMonster(spritep2)
+        //if (this.enemyparty) {
+        //  const spritep2 = await this.createMonsterSprite(this.enemyparty[i], enemyGrid[i][0])
+        //  enemyGrid[i][0].setMonster(spritep2)
+        //}
       }
 
       this.playerGrid = playerGrid
       this.enemyGrid = enemyGrid
-      this.p1party = p1party
-      this.p2party = p2party
+      this.playerparty = playerparty
+
+      callback()
     }
 
     await initialSetup()
-    this.EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI, this)
   }
 
   update() {
@@ -113,6 +156,27 @@ export default class BattleScene extends Scene3D {
     //}
   }
 
+  /**
+   * A function that rehydrates local game state with data from the server.
+   */
+  refreshGameState(data: GameState) {
+    console.log(data)
+    const { field } = data
+    const enemyGridFromServer = this.whoami === 1 ? field.player2grid : field.player1grid
+    //this.enemyGrid = enemyGrid
+
+    enemyGridFromServer.forEach(({ monster, row, col }) => {
+      const serverMonster = InstanceMonsterFromServerData(monster)
+      const gridSpot = this.enemyGrid[row][col]
+      gridSpot.setMonster(serverMonster)
+      this.createMonsterSprite(serverMonster, gridSpot)
+    })
+  }
+
+  /**
+   * A function to obtain every monster currently on the field, from either player
+   * @returns a double array of every monster currently on screen.
+   */
   getFieldMonsters() {
     const foundMonsters: {
       myMonsters: Monster[]
