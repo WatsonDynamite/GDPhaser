@@ -166,6 +166,10 @@ export class Monster {
     return this.gameObject
   }
 
+  getMiniSprite() {
+    return this.sprites.miniSpritePath
+  }
+
   playAtkAnim() {
     if (this.gameObject) {
       this.gameObject.anims.play('jump').onComplete(() => {
@@ -180,6 +184,7 @@ export class Monster {
 export type MonsterSpriteSet = {
   frontSpritePath: string
   backSpritePath: string
+  miniSpritePath: string
 }
 
 export type MonsterServerData = {

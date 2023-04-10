@@ -1,7 +1,8 @@
 ﻿//this defines the structure of the moves that monsters use.
 
-import { Category } from './enums'
+import { Category, Targeting } from './enums'
 import { SecondaryEffect } from './secondaryEffect'
+import { MoveTargeting } from './turnAction'
 import { Type } from './type'
 
 export class Move {
@@ -21,6 +22,8 @@ export class Move {
   priority: number
   //array of special secondary effects triggered by the move
   secondaryEffects: SecondaryEffect[]
+  //what the move targets
+  targeting: MoveTargeting
 
   constructor(
     name: string,
@@ -30,7 +33,8 @@ export class Move {
     type: Type,
     category: Category,
     priority: number,
-    secondaryFX: SecondaryEffect[]
+    secondaryFX: SecondaryEffect[],
+    targeting: MoveTargeting
   ) {
     this.name = name
     this.desc = desc
@@ -40,5 +44,6 @@ export class Move {
     this.category = category
     this.priority = priority
     this.secondaryEffects = secondaryFX
+    this.targeting = targeting
   }
 }

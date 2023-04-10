@@ -174,6 +174,17 @@ export default class BattleScene extends Scene3D {
   }
 
   /**
+   * A simple function to obtain grid status for either player
+   * @returns a double array of GridSpot
+   */
+  getGrid() {
+    return {
+      playerGrid: this.playerGrid,
+      enemyGrid: this.enemyGrid
+    }
+  }
+
+  /**
    * A function to obtain every monster currently on the field, from either player
    * @returns a double array of every monster currently on screen.
    */

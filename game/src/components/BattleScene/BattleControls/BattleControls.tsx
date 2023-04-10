@@ -3,32 +3,67 @@ import styled from 'styled-components'
 import CustomEventDispatcher, { CustomEvents } from '../../../scripts/behaviors/CustomEventDispatcher'
 import { Monster } from '../../../scripts/definitions/monster'
 import { Move } from '../../../scripts/definitions/move'
-import { TurnActionMove } from '../../../scripts/definitions/turnAction'
+import { TurnActionMove, TurnActionTarget } from '../../../scripts/definitions/turnAction'
 import APMeter from '../APMeter'
-import GridControls from './partials/GridControls'
+import GridControls, { CustomButton } from './partials/GridControls'
 import MoveButton from './partials/MoveButton'
+import TargetingControls from './partials/TargetingControls'
+import { GridSpot } from '../../../gameObjects/gridSpot'
 
-export default function BattleControls({ monster }: { monster: Monster }) {
-  const { move1, move2, move3, move4 } = monster
+type BattleControlsProps = {
+  currentMonster: Monster
+  //myGrid: GridSpot[][]
+  //enemyGrid: GridSpot[][]
+  //myMonsters: Monster[]
+  //enemyMonsters: Monster[]
+}
+
+export default function BattleControls({ currentMonster }: BattleControlsProps) {
+  const { move1, move2, move3, move4 } = currentMonster
+  const [mode, setMode] = React.useState<'move' | 'target'>('move')
+  const [move, setMove] = React.useState<Move>()
 
   function onMoveSelect(move: Move | undefined) {
-    if (move)
-      CustomEventDispatcher.getInstance().emit(
-        CustomEvents.QUEUE_TURN_ACTION,
-        new TurnActionMove(move, monster, monster)
-      )
+    if (move) {
+      setMove(move)
+      setMode('target')
+    }
+  }
+
+  function onCancelTargeting() {
+    setMode('move')
+    setMove(undefined)
+  }
+
+  function onTargetSelect(target: TurnActionTarget) {
+    QueueMove(move!, target)
+    onCancelTargeting()
+  }
+
+  function QueueMove(move: Move, target: TurnActionTarget) {
+    CustomEventDispatcher.getInstance().emit(
+      CustomEvents.QUEUE_TURN_ACTION,
+      new TurnActionMove(move, currentMonster, target)
+    )
   }
 
   return (
     <Container>
-      <APMeter />
-      <GridControls />
-      <MoveGrid>
-        <MoveButton onClick={() => onMoveSelect(move1)} move={move1} />
-        <MoveButton onClick={() => onMoveSelect(move2)} move={move2} />
-        <MoveButton onClick={() => onMoveSelect(move3)} move={move3} />
-        <MoveButton onClick={() => onMoveSelect(move4)} move={move4} />
-      </MoveGrid>
+      {mode === 'move' && (
+        <>
+          <APMeter />
+          <GridControls />
+          <MoveGrid>
+            <MoveButton onClick={() => onMoveSelect(move1)} move={move1} />
+            <MoveButton onClick={() => onMoveSelect(move2)} move={move2} />
+            <MoveButton onClick={() => onMoveSelect(move3)} move={move3} />
+            <MoveButton onClick={() => onMoveSelect(move4)} move={move4} />
+          </MoveGrid>
+        </>
+      )}
+      {mode === 'target' && move && (
+        <TargetingControls move={move} onTargetSelect={onTargetSelect} onCancel={onCancelTargeting} />
+      )}
     </Container>
   )
 }

@@ -18,7 +18,8 @@ export const charizard = new Monster(
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
-    backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png'
+    backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png',
+    miniSpritePath: '/assets/sprites/monstersprites/charizard/charizard_mini.png'
   }
 )
 
@@ -36,7 +37,8 @@ export const blastoise = new Monster(
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_f.png',
-    backSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_b.png'
+    backSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_b.png',
+    miniSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_mini.png'
   }
 )
 
@@ -54,7 +56,8 @@ export const venusaur = new Monster(
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
-    backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png'
+    backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png',
+    miniSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_mini.png'
   }
 )
 

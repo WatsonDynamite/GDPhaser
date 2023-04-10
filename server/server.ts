@@ -80,10 +80,13 @@ io.on("connection", (socket) => {
     if (socket.id === gameState.player1) {
       gameState.player1 = null;
       gameState.field.player1grid = [];
+      io.emit("gameNotReady");
     }
     if (socket.id === gameState.player2) {
       gameState.player2 = null;
       gameState.field.player2grid = [];
+
+      io.emit("gameNotReady");
     }
     setTimeout(() => {
       io.emit("chatMessage", {

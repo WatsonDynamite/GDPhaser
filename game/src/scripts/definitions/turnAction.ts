@@ -1,4 +1,5 @@
 import { GridSpot } from '../../gameObjects/gridSpot'
+import { Targeting } from './enums'
 import { Monster } from './monster'
 import { Move } from './move'
 
@@ -18,15 +19,15 @@ export class TurnAction {
 
 export class TurnActionMove extends TurnAction {
   private move: Move
-  private target: Monster | GridSpot
+  private target: TurnActionTarget
 
-  constructor(move: Move, user: Monster, target: Monster | GridSpot) {
+  constructor(move: Move, user: Monster, target: TurnActionTarget) {
     super(user)
     this.move = move
     this.target = target
   }
 
-  public getTarget(): Monster | GridSpot {
+  public getTarget(): TurnActionTarget {
     return this.target
   }
 
@@ -55,3 +56,24 @@ export class TurnActionMoveCol extends TurnAction {}
 export class TurnActionRest extends TurnAction {}
 
 export class TurnActionUseItem extends TurnAction {}
+
+export type TurnActionTarget = Monster | Monster[] | GridSpot | GridSpot[]
+
+export type MoveTargeting =
+  | { targeting: Targeting.USER }
+  | { targeting: Targeting.SINGLE_ENEMY }
+  | { targeting: Targeting.SINGLE_TEAMMATE }
+  | { targeting: Targeting.SINGLE_GRID_SELF }
+  | { targeting: Targeting.SINGLE_GRID_ENEMY }
+  | {
+      targeting:
+        | Targeting.MULTIPLE_ENEMY
+        | Targeting.MULTIPLE_TEAMMATE
+        | Targeting.MULTIPLE_GRID_OTHER
+        | Targeting.MULTIPLE_GRID_SELF
+      qty: number
+    }
+  | {
+      targeting: Targeting.MULTIPLE_GRID_SELF_FORMATION | Targeting.MULTIPLE_GRID_OTHER_FORMATION
+      formation: number[][]
+    }

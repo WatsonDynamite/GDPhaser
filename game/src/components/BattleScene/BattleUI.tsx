@@ -6,6 +6,7 @@ import FullScreenContainerDiv from '../FullScreenContainer'
 import BattleControls from './BattleControls/BattleControls'
 import Chat from './Chat'
 import MonsterPlate from './MonsterPlate'
+import BattleDataContext from '../BattleDataContext'
 
 type BattleUIProps = {
   battleScene: BattleScene
@@ -21,7 +22,6 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
   } = battleScene
 
   const { myMonsters, enemyMonsters } = battleScene.getFieldMonsters()
-
   const [currentMonster, setCurrentMonster] = useState<number>(0)
   const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
 
@@ -49,15 +49,17 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
   })
 
   return (
-    <FullScreenContainerDiv>
-      <Chat socketClient={socketClient} />
-      {myMonsters.map((monster: Monster) => (
-        <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-      ))}
-      {enemyMonsters.map((monster: Monster) => (
-        <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-      ))}
-      {isShowingUI && <BattleControls monster={myMonsters[currentMonster]} />}
-    </FullScreenContainerDiv>
+    <BattleDataContext.Provider value={battleScene}>
+      <FullScreenContainerDiv>
+        <Chat socketClient={socketClient} />
+        {myMonsters.map((monster: Monster) => (
+          <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+        ))}
+        {enemyMonsters.map((monster: Monster) => (
+          <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+        ))}
+        {isShowingUI && <BattleControls currentMonster={myMonsters[currentMonster]} />}
+      </FullScreenContainerDiv>
+    </BattleDataContext.Provider>
   )
 }
