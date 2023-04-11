@@ -21,32 +21,28 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
     socketClient
   } = battleScene
 
-  const { myMonsters, enemyMonsters } = battleScene.getFieldMonsters()
+  const { myMonsters, enemyMonsters } = BattleScene.getFieldMonsters()
   const [currentMonster, setCurrentMonster] = useState<number>(0)
   const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
 
-  function handleTurnQueue() {
-    if (currentMonster === myMonsters.length - 1) {
-      //time to send the move queue to the server
-      if (myMonsters[0]) setCurrentMonster(0)
+  useEffect(() => {
+    CustomEventDispatcher.getInstance().on(CustomEvents.SHOW_BATTLE_UI, () => {
+      setIsShowingUI(true)
+    })
+    CustomEventDispatcher.getInstance().on(CustomEvents.HIDE_BATTLE_UI, () => {
       setIsShowingUI(false)
+    })
+  }, [])
+
+  function moveToNextMonster() {
+    if (currentMonster === myMonsters.length - 1) {
+      if (myMonsters[0]) setCurrentMonster(0)
     } else {
       if (myMonsters[currentMonster + 1]) {
         setCurrentMonster(currentMonster + 1)
       }
     }
   }
-
-  CustomEventDispatcher.getInstance().on(CustomEvents.QUEUE_TURN_ACTION, () => {
-    handleTurnQueue()
-    console.log('hit')
-  })
-  CustomEventDispatcher.getInstance().on(CustomEvents.SHOW_BATTLE_UI, () => {
-    setIsShowingUI(true)
-  })
-  CustomEventDispatcher.getInstance().on(CustomEvents.HIDE_BATTLE_UI, () => {
-    setIsShowingUI(false)
-  })
 
   return (
     <BattleDataContext.Provider value={battleScene}>
@@ -58,7 +54,9 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
         {enemyMonsters.map((monster: Monster) => (
           <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
         ))}
-        {isShowingUI && <BattleControls currentMonster={myMonsters[currentMonster]} />}
+        {isShowingUI && (
+          <BattleControls moveToNextMonster={moveToNextMonster} currentMonster={myMonsters[currentMonster]} />
+        )}
       </FullScreenContainerDiv>
     </BattleDataContext.Provider>
   )

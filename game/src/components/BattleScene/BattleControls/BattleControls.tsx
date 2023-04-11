@@ -1,24 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import CustomEventDispatcher, { CustomEvents } from '../../../scripts/behaviors/CustomEventDispatcher'
 import { Monster } from '../../../scripts/definitions/monster'
 import { Move } from '../../../scripts/definitions/move'
-import { TurnActionMove, TurnActionTarget } from '../../../scripts/definitions/turnAction'
+import { TurnActionMoveDTO, TurnActionTarget } from '../../../scripts/definitions/turnAction'
 import APMeter from '../APMeter'
 import GridControls, { CustomButton } from './partials/GridControls'
 import MoveButton from './partials/MoveButton'
 import TargetingControls from './partials/TargetingControls'
 import { GridSpot } from '../../../gameObjects/gridSpot'
+import BattleDataContext from '../../BattleDataContext'
 
 type BattleControlsProps = {
   currentMonster: Monster
-  //myGrid: GridSpot[][]
-  //enemyGrid: GridSpot[][]
-  //myMonsters: Monster[]
-  //enemyMonsters: Monster[]
+  moveToNextMonster: Function
 }
 
-export default function BattleControls({ currentMonster }: BattleControlsProps) {
+export default function BattleControls({ currentMonster, moveToNextMonster }: BattleControlsProps) {
+  const battleScene = useContext(BattleDataContext)
   const { move1, move2, move3, move4 } = currentMonster
   const [mode, setMode] = React.useState<'move' | 'target'>('move')
   const [move, setMove] = React.useState<Move>()
@@ -41,10 +40,16 @@ export default function BattleControls({ currentMonster }: BattleControlsProps) 
   }
 
   function QueueMove(move: Move, target: TurnActionTarget) {
-    CustomEventDispatcher.getInstance().emit(
-      CustomEvents.QUEUE_TURN_ACTION,
-      new TurnActionMove(move, currentMonster, target)
+    const id = Array.isArray(target) ? target.map((el) => el.battleId) : target.getBattleId()!
+
+    const action = new TurnActionMoveDTO(
+      `${battleScene!.socketClient.id}-${currentMonster.name}`,
+      currentMonster.stats.dex.getTrueValue() * move.priority,
+      move.id,
+      id
     )
+    battleScene!.addTurnAction(action)
+    moveToNextMonster()
   }
 
   return (

@@ -14,8 +14,10 @@ import { Type } from './type'
 export class Monster {
   //NON VOLATILE DATA
 
-  /** id, for teambuilder and server purposes */
+  /** id, for teambuilder purposes */
   id: string
+  /** id for battle tracking */
+  private battleId?: string
   /** name of the monster */
   name: string
   /** primary type of the monster */
@@ -179,6 +181,29 @@ export class Monster {
       console.error(`monster ${this.name} does not yet have a game object`)
     }
   }
+
+  convertToDTO(): MonsterDTO {
+    return {
+      id: this.id,
+      battleId: this.battleId!,
+      currentHP: this.currentHP,
+      statusEffect: this.statusEffect
+        ? {
+            type: this.statusEffect?.statusEffectType,
+            turnCounter: this.statusEffect?.turnCounter,
+            maxTurns: this.statusEffect?.maxTurns
+          }
+        : undefined
+    }
+  }
+
+  setBattleId(id: string) {
+    this.battleId = id
+  }
+
+  getBattleId() {
+    return this.battleId
+  }
 }
 
 export type MonsterSpriteSet = {
@@ -187,7 +212,13 @@ export type MonsterSpriteSet = {
   miniSpritePath: string
 }
 
-export type MonsterServerData = {
+export type MonsterDTO = {
   id: string
+  battleId: string
   currentHP: number
+  statusEffect?: {
+    type: StatusEffectIndex
+    maxTurns: number
+    turnCounter: number
+  }
 }

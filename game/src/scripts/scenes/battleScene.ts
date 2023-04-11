@@ -2,12 +2,20 @@ import { FLAT, Scene3D, THREE } from '@enable3d/phaser-extension'
 import _ from 'lodash'
 import { GridSpot } from '../../gameObjects/gridSpot'
 import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
-import { Monster, MonsterServerData } from '../definitions/monster'
-import { blastoise, charizard, InstanceMonsterFromServerData, venusaur } from '../data/monsterList'
-import { EventEmitter } from 'stream'
-import { TurnAction } from '../definitions/turnAction'
 import { io, Socket } from 'socket.io-client'
+import { venusaur, blastoise, charizard, InstanceMonsterFromServerData } from '../data/monsterList'
+import { Monster, MonsterDTO } from '../definitions/monster'
 import { GameState } from '../definitions/serverPayloads'
+import {
+  CompoundTurnActionDTOType,
+  TurnAction,
+  TurnActionDTO,
+  TurnActionMove,
+  TurnActionMoveDTO
+} from '../definitions/turnAction'
+import { JsonSerializer } from 'typescript-json-serializer'
+import { SocketEvents } from '../definitions/enums'
+import { act } from '@react-three/fiber'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -15,13 +23,14 @@ export default class BattleScene extends Scene3D {
   }
 
   private EventDispatcher = CustomEventDispatcher.getInstance()
+  private serializer = new JsonSerializer()
 
   //
-  private playerGrid: GridSpot[][]
-  private enemyGrid: GridSpot[][]
+  private static playerGrid: GridSpot[][]
+  private static enemyGrid: GridSpot[][]
 
-  playerparty: Monster[]
-  enemyparty: Monster[]
+  public static playerparty: Monster[]
+  public static enemyparty: Monster[]
 
   //who this player is in the server
   //in the client, the player is always player 1 and the opponent is always player 2
@@ -30,7 +39,7 @@ export default class BattleScene extends Scene3D {
   private whoami: number
 
   //actions to send to the server
-  actionQueue: TurnAction[]
+  actionQueue: TurnActionDTO[]
 
   //socket.io client
   socketClient: Socket
@@ -40,19 +49,26 @@ export default class BattleScene extends Scene3D {
     this.accessThirdDimension()
     this.setScene(() => {
       this.socketClient = data.socketClient
-      this.socketClient.on('youAre', (data) => (this.whoami = data))
+      console.log(data)
+      this.socketClient.on('youAre', (youAreData) => {
+        this.whoami = youAreData
+      })
 
-      const playerMonsterDataForServer: { monster: MonsterServerData; row: number; col: number }[] = []
+      const playerMonsterDataForServer: { monster: MonsterDTO; row: number; col: number }[] = []
 
       for (let row = 0; row < 3; row++) {
         for (let col = 0; col < 2; col++) {
-          const gridSpot = this.playerGrid[row][col]
+          const gridSpot = BattleScene.playerGrid[row][col]
+          gridSpot.setBattleId(`${data.socketClient.id}-${row}-${col}`)
           const monster = gridSpot.getMonster()
 
           if (monster) {
+            const monsterBattleId = `${data.socketClient.id}-${monster.name}`
+            monster.setBattleId(monsterBattleId)
             playerMonsterDataForServer.push({
               monster: {
                 id: monster.id,
+                battleId: monsterBattleId,
                 currentHP: monster.currentHP
               },
               row,
@@ -62,13 +78,17 @@ export default class BattleScene extends Scene3D {
         }
       }
 
-      this.socketClient.emit('initData', {
+      this.socketClient.emit(SocketEvents.INIT_DATA, {
         user: data.username,
         grid: playerMonsterDataForServer
       })
-      this.socketClient.on('refreshGameState', (data) => this.refreshGameState(data))
-      this.socketClient.on('gameReady', () => {
+      this.socketClient.on(SocketEvents.REFRESH_GAME_STATE, (data) => this.refreshGameState(data))
+      this.socketClient.on(SocketEvents.GAME_READY, () => {
         this.EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI, this)
+      })
+
+      this.socketClient.on(SocketEvents.TURNS_READY, (turnData: CompoundTurnActionDTOType[]) => {
+        this.executeTurnActions(turnData)
       })
     })
   }
@@ -128,21 +148,15 @@ export default class BattleScene extends Scene3D {
       ]
 
       const playerparty = _.cloneDeep([venusaur, blastoise, charizard])
-      //const enemyparty = _.cloneDeep([charizard, venusaur, blastoise])
 
       for (let i = 0; i < 3; i++) {
         const spritep1 = await this.createMonsterSprite(playerparty[i], playerGrid[i][0])
         playerGrid[i][0].setMonster(spritep1)
-
-        //if (this.enemyparty) {
-        //  const spritep2 = await this.createMonsterSprite(this.enemyparty[i], enemyGrid[i][0])
-        //  enemyGrid[i][0].setMonster(spritep2)
-        //}
       }
 
-      this.playerGrid = playerGrid
-      this.enemyGrid = enemyGrid
-      this.playerparty = playerparty
+      BattleScene.playerGrid = playerGrid
+      BattleScene.enemyGrid = enemyGrid
+      BattleScene.playerparty = playerparty
 
       callback()
     }
@@ -167,7 +181,7 @@ export default class BattleScene extends Scene3D {
 
     enemyGridFromServer.forEach(({ monster, row, col }) => {
       const serverMonster = InstanceMonsterFromServerData(monster)
-      const gridSpot = this.enemyGrid[row][col]
+      const gridSpot = BattleScene.enemyGrid[row][col]
       gridSpot.setMonster(serverMonster)
       this.createMonsterSprite(serverMonster, gridSpot)
     })
@@ -179,8 +193,8 @@ export default class BattleScene extends Scene3D {
    */
   getGrid() {
     return {
-      playerGrid: this.playerGrid,
-      enemyGrid: this.enemyGrid
+      playerGrid: BattleScene.playerGrid,
+      enemyGrid: BattleScene.enemyGrid
     }
   }
 
@@ -188,7 +202,7 @@ export default class BattleScene extends Scene3D {
    * A function to obtain every monster currently on the field, from either player
    * @returns a double array of every monster currently on screen.
    */
-  getFieldMonsters() {
+  public static getFieldMonsters() {
     const foundMonsters: {
       myMonsters: Monster[]
       enemyMonsters: Monster[]
@@ -197,7 +211,7 @@ export default class BattleScene extends Scene3D {
       enemyMonsters: []
     }
 
-    this.playerGrid.forEach((items: GridSpot[]) => {
+    BattleScene.playerGrid.forEach((items: GridSpot[]) => {
       items.forEach((el) => {
         const mon = el.getMonster()
         if (mon) foundMonsters.myMonsters.push(mon)
@@ -214,7 +228,37 @@ export default class BattleScene extends Scene3D {
     return foundMonsters
   }
 
-  executeTurnActions() {}
+  popTurnAction() {
+    this.actionQueue.pop()
+  }
+
+  addTurnAction(act: TurnActionDTO) {
+    const playerMonsterCount = BattleScene.getFieldMonsters().myMonsters.length
+    this.actionQueue.push(act)
+    if (this.actionQueue.length === playerMonsterCount) {
+      //send to server
+      try {
+        const serializedActionArray = this.serializer.serializeObjectArray(this.actionQueue)
+        this.EventDispatcher.emit(CustomEvents.HIDE_BATTLE_UI)
+        this.socketClient.emit('sendTurnActions', serializedActionArray)
+        this.actionQueue = []
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
+  async executeTurnActions(actions: CompoundTurnActionDTOType[]) {
+    const instancedTurnActions = actions.map((dto) => {
+      //time to make these real
+      //check what type of action this is
+      if (dto.moveID) {
+        return TurnActionMove.getInstanceFromDTO(dto)
+      }
+    })
+
+    console.log(instancedTurnActions)
+  }
 
   /**
    *
@@ -238,8 +282,6 @@ export default class BattleScene extends Scene3D {
     const mon = new FLAT.SpriteSheet(texture, sizes)
 
     mon.anims.add('idle', { start: 0, end: 93, rate: 20 })
-    mon.anims.add('run', { start: 8, end: 13, rate: 20 })
-    mon.anims.add('jump', { timeline: [16, 17, 18, 19, 20, 21, 22, 23, 0], rate: 20, repeat: 1 })
 
     mon.anims.play('idle')
 

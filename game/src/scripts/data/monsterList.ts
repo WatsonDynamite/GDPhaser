@@ -1,7 +1,7 @@
 import { Abilities } from '../definitions/ability'
-import { Monster, MonsterServerData } from '../definitions/monster'
+import { Monster, MonsterDTO } from '../definitions/monster'
 import { Type } from '../definitions/type'
-import { Moves } from './moveList'
+import { moveList } from './moveList'
 import _ from 'lodash'
 
 export const charizard = new Monster(
@@ -14,7 +14,7 @@ export const charizard = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMoveFire },
+  { m1: moveList.get('testMoveFire')! },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
@@ -33,7 +33,7 @@ export const blastoise = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMoveWater },
+  { m1: moveList.get('testMoveWater')! },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_f.png',
@@ -52,7 +52,7 @@ export const venusaur = new Monster(
   100,
   100,
   100,
-  { m1: Moves.testMoveNature },
+  { m1: moveList.get('testMoveNature')! },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
@@ -61,15 +61,20 @@ export const venusaur = new Monster(
   }
 )
 
-const monsterList = {
-  [charizard.id]: charizard,
-  [blastoise.id]: blastoise,
-  [venusaur.id]: venusaur
-}
+const monsterList = new Map<string, Monster>()
+  .set(charizard.id, charizard)
+  .set(blastoise.id, blastoise)
+  .set(venusaur.id, venusaur)
 
-export function InstanceMonsterFromServerData(data: MonsterServerData): Monster {
-  const { id, currentHP } = data
-  const monster: Monster = _.cloneDeep(monsterList[id]) as Monster
+export function InstanceMonsterFromServerData(data: MonsterDTO): Monster {
+  console.log(data)
+  const { id, currentHP, battleId, statusEffect } = data
+  const monster: Monster = _.cloneDeep(monsterList.get(id)) as Monster
+  monster.setBattleId(battleId)
   monster.setMonsterState(currentHP)
+  if (statusEffect) {
+    // get status from list
+    // monster.setStatusEffect(...)
+  }
   return monster
 }

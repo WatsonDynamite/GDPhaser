@@ -54,3 +54,16 @@ export enum Targeting {
   MULTIPLE_GRID_SELF_FORMATION,
   MULTIPLE_GRID_OTHER_FORMATION
 }
+
+export enum SocketEvents {
+  CONNECT = 'connect', // connect to server
+  DISCONNECT = 'disconnect', // disconnect from server
+  INIT_DATA = 'initData', // initialize battle data
+  CHAT_MESSAGE = 'chatMessage', // chat message
+  LOAD_CHAT_HISTORY = 'loadChatHistory', // chat history from server
+  SEND_TURN_ACTIONS = 'sendTurnActions', // send user turn actions
+  YOU_ARE = 'youAre', // tell player who they are in the server
+  REFRESH_GAME_STATE = 'refreshGameState', // rehydrate local depictions of the battle (sync between players)
+  GAME_READY = 'gameReady', // both players connected
+  TURNS_READY = 'turnsReady' // both players selected their turn outline
+}

@@ -6,6 +6,8 @@ import { MoveTargeting } from './turnAction'
 import { Type } from './type'
 
 export class Move {
+  //id for teambuilder and server purposes
+  id: string
   //the name of a move
   name: string
   //the move's description
@@ -18,7 +20,7 @@ export class Move {
   type: Type
   //Category: physical, special, status, see: Category class
   category: Category
-  //Priority: This shouldn't go lower than -4 or higher than 4 but there are no other constraints to it.
+  //Priority: Priority multiplier, this shouldn't go lower than 0.25x or higher than 4x but there are no other constraints to it.
   priority: number
   //array of special secondary effects triggered by the move
   secondaryEffects: SecondaryEffect[]
@@ -26,23 +28,25 @@ export class Move {
   targeting: MoveTargeting
 
   constructor(
+    id: string,
     name: string,
     desc: string,
     power: number,
     cost: number,
     type: Type,
     category: Category,
-    priority: number,
+    priority: 0.25 | 0.33 | 0.5 | 1 | 2 | 3 | 4,
     secondaryFX: SecondaryEffect[],
     targeting: MoveTargeting
   ) {
+    this.id = id
     this.name = name
     this.desc = desc
     this.APCost = cost
     this.power = power
     this.type = type
     this.category = category
-    this.priority = priority
+    this.priority = priority ?? 1
     this.secondaryEffects = secondaryFX
     this.targeting = targeting
   }

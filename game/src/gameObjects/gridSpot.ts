@@ -6,6 +6,7 @@ import MonsterGameObj from './monsterGameObject'
 import { Monster } from '../scripts/definitions/monster'
 
 export class GridSpot extends GameObjects.GameObject {
+  public battleId: string
   public spotModel: ExtendedObject3D
   private meta: {
     player: number
@@ -58,5 +59,13 @@ export class GridSpot extends GameObjects.GameObject {
 
   public getMonster() {
     return this.monster
+  }
+
+  public setBattleId(id: string) {
+    this.battleId = id
+  }
+
+  public getBattleId() {
+    return this.battleId
   }
 }

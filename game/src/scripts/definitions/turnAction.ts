@@ -1,10 +1,13 @@
 import { GridSpot } from '../../gameObjects/gridSpot'
+import { moveList } from '../data/moveList'
+import BattleScene from '../scenes/battleScene'
 import { Targeting } from './enums'
 import { Monster } from './monster'
 import { Move } from './move'
 
 export class TurnAction {
   private user: Monster
+  public priorityCalc: number
 
   constructor(user: Monster) {
     this.user = user
@@ -17,6 +20,16 @@ export class TurnAction {
   public executeAction() {}
 }
 
+export class TurnActionDTO {
+  userID: string
+  priorityCalc: number
+
+  constructor(usrID: string, priority: number) {
+    this.userID = usrID
+    this.priorityCalc = priority
+  }
+}
+
 export class TurnActionMove extends TurnAction {
   private move: Move
   private target: TurnActionTarget
@@ -25,6 +38,23 @@ export class TurnActionMove extends TurnAction {
     super(user)
     this.move = move
     this.target = target
+  }
+
+  public static getInstanceFromDTO(DTO: TurnActionMoveDTO): TurnActionMove | null {
+    const { moveID, targetID, userID } = DTO
+    const { myMonsters, enemyMonsters } = BattleScene.getFieldMonsters()
+    const allFieldMonsters = [...myMonsters, ...enemyMonsters]
+    const userMonster = allFieldMonsters.find((mon) => {
+      return mon.getBattleId() === userID
+    })
+    const targetMonster = allFieldMonsters.find((mon) => mon.getBattleId() === targetID)
+
+    if (!userMonster || !targetMonster) {
+      console.log('but it failed!')
+      return null
+      //could it be that the move failed because the target or the user fainted? remember to verify later
+    }
+    return new TurnActionMove(moveList.get(moveID)!, userMonster, targetMonster)
   }
 
   public getTarget(): TurnActionTarget {
@@ -36,10 +66,20 @@ export class TurnActionMove extends TurnAction {
   }
 }
 
+export class TurnActionMoveDTO extends TurnActionDTO {
+  moveID: string
+  targetID: string | string[]
+
+  constructor(usrID: string, priority: number, moveID: string, targetID: string | string[]) {
+    super(usrID, priority)
+    ;(this.moveID = moveID), (this.targetID = targetID)
+  }
+}
+
 export class TurnActionSwitch extends TurnAction {
   private replacement: Monster
 
-  constructor(user: Monster, replacement: Monster) {
+  constructor(user: Monster, replacement: Monster, userID: string) {
     super(user)
     this.replacement = replacement
   }
@@ -49,15 +89,25 @@ export class TurnActionSwitch extends TurnAction {
   }
 }
 
-export class TurnActionMoveRow extends TurnAction {}
+export class TurnActionChangeRow extends TurnAction {}
 
-export class TurnActionMoveCol extends TurnAction {}
+export class TurnActionChangeCol extends TurnAction {}
 
 export class TurnActionRest extends TurnAction {}
 
 export class TurnActionUseItem extends TurnAction {}
 
 export type TurnActionTarget = Monster | Monster[] | GridSpot | GridSpot[]
+
+export type CompoundTurnActionType =
+  | TurnActionMove
+  | TurnActionSwitch
+  | TurnActionChangeRow
+  | TurnActionChangeCol
+  | TurnActionRest
+  | TurnActionUseItem
+
+export type CompoundTurnActionDTOType = TurnActionMoveDTO
 
 export type MoveTargeting =
   | { targeting: Targeting.USER }
