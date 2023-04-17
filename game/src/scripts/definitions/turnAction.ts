@@ -1,11 +1,13 @@
 import { GridSpot } from '../../gameObjects/gridSpot'
+import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
 import { moveList } from '../data/moveList'
 import BattleScene from '../scenes/battleScene'
-import { Targeting } from './enums'
+import { SocketEvents, Targeting } from './enums'
 import { Monster } from './monster'
 import { Move } from './move'
+import { Message } from './serverPayloads'
 
-export class TurnAction {
+export abstract class TurnAction {
   private user: Monster
   public priorityCalc: number
 
@@ -17,7 +19,11 @@ export class TurnAction {
     return this.user
   }
 
-  public executeAction() {}
+  public abstract executeTurnAction()
+}
+
+interface HasTurnActionExecution {
+  executeTurnAction: Function
 }
 
 export class TurnActionDTO {
@@ -64,6 +70,20 @@ export class TurnActionMove extends TurnAction {
   public getMove(): Move {
     return this.move
   }
+
+  override
+  public async executeTurnAction(): Promise<void> {
+    return new Promise((resolve) => {
+      const eventDispatcher = CustomEventDispatcher.getInstance()
+      const msg: Message = {
+        user: '',
+        message: `${this.getUser().name} used ${this.getMove().name}!!`
+      }
+      BattleScene.socketClient.emit(SocketEvents.CHAT_MESSAGE, msg)
+
+      eventDispatcher.emit(CustomEvents.SHOW_MOVE_PLATE, this.getMove().name)
+    })
+  }
 }
 
 export class TurnActionMoveDTO extends TurnActionDTO {
@@ -77,6 +97,9 @@ export class TurnActionMoveDTO extends TurnActionDTO {
 }
 
 export class TurnActionSwitch extends TurnAction {
+  public executeTurnAction() {
+    throw new Error('Method not implemented.')
+  }
   private replacement: Monster
 
   constructor(user: Monster, replacement: Monster, userID: string) {
@@ -89,13 +112,29 @@ export class TurnActionSwitch extends TurnAction {
   }
 }
 
-export class TurnActionChangeRow extends TurnAction {}
+export class TurnActionChangeRow extends TurnAction {
+  public executeTurnAction() {
+    throw new Error('Method not implemented.')
+  }
+}
 
-export class TurnActionChangeCol extends TurnAction {}
+export class TurnActionChangeCol extends TurnAction {
+  public executeTurnAction() {
+    throw new Error('Method not implemented.')
+  }
+}
 
-export class TurnActionRest extends TurnAction {}
+export class TurnActionRest extends TurnAction {
+  public executeTurnAction() {
+    throw new Error('Method not implemented.')
+  }
+}
 
-export class TurnActionUseItem extends TurnAction {}
+export class TurnActionUseItem extends TurnAction {
+  public executeTurnAction() {
+    throw new Error('Method not implemented.')
+  }
+}
 
 export type TurnActionTarget = Monster | Monster[] | GridSpot | GridSpot[]
 

@@ -5,9 +5,10 @@ import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDis
 import { io, Socket } from 'socket.io-client'
 import { venusaur, blastoise, charizard, InstanceMonsterFromServerData } from '../data/monsterList'
 import { Monster, MonsterDTO } from '../definitions/monster'
-import { GameState } from '../definitions/serverPayloads'
+import { GameState, Message } from '../definitions/serverPayloads'
 import {
   CompoundTurnActionDTOType,
+  CompoundTurnActionType,
   TurnAction,
   TurnActionDTO,
   TurnActionMove,
@@ -42,15 +43,15 @@ export default class BattleScene extends Scene3D {
   actionQueue: TurnActionDTO[]
 
   //socket.io client
-  socketClient: Socket
+  public static socketClient: Socket
 
   init(data) {
     this.actionQueue = []
     this.accessThirdDimension()
     this.setScene(() => {
-      this.socketClient = data.socketClient
+      BattleScene.socketClient = data.socketClient
       console.log(data)
-      this.socketClient.on('youAre', (youAreData) => {
+      BattleScene.socketClient.on('youAre', (youAreData) => {
         this.whoami = youAreData
       })
 
@@ -78,16 +79,16 @@ export default class BattleScene extends Scene3D {
         }
       }
 
-      this.socketClient.emit(SocketEvents.INIT_DATA, {
+      BattleScene.socketClient.emit(SocketEvents.INIT_DATA, {
         user: data.username,
         grid: playerMonsterDataForServer
       })
-      this.socketClient.on(SocketEvents.REFRESH_GAME_STATE, (data) => this.refreshGameState(data))
-      this.socketClient.on(SocketEvents.GAME_READY, () => {
+      BattleScene.socketClient.on(SocketEvents.REFRESH_GAME_STATE, (data) => this.refreshGameState(data))
+      BattleScene.socketClient.on(SocketEvents.GAME_READY, () => {
         this.EventDispatcher.emit(CustomEvents.INIT_BATTLE_UI, this)
       })
 
-      this.socketClient.on(SocketEvents.TURNS_READY, (turnData: CompoundTurnActionDTOType[]) => {
+      BattleScene.socketClient.on(SocketEvents.TURNS_READY, (turnData: CompoundTurnActionDTOType[]) => {
         this.executeTurnActions(turnData)
       })
     })
@@ -240,7 +241,7 @@ export default class BattleScene extends Scene3D {
       try {
         const serializedActionArray = this.serializer.serializeObjectArray(this.actionQueue)
         this.EventDispatcher.emit(CustomEvents.HIDE_BATTLE_UI)
-        this.socketClient.emit('sendTurnActions', serializedActionArray)
+        BattleScene.socketClient.emit('sendTurnActions', serializedActionArray)
         this.actionQueue = []
       } catch (err) {
         console.error(err)
@@ -248,16 +249,20 @@ export default class BattleScene extends Scene3D {
     }
   }
 
-  async executeTurnActions(actions: CompoundTurnActionDTOType[]) {
-    const instancedTurnActions = actions.map((dto) => {
-      //time to make these real
-      //check what type of action this is
-      if (dto.moveID) {
-        return TurnActionMove.getInstanceFromDTO(dto)
-      }
-    })
+  executeTurnActions(actions: CompoundTurnActionDTOType[]) {
+    const instancedTurnActions = actions
+      .map((dto) => {
+        //time to make these real
+        //check what type of action this is
+        if (dto.moveID) {
+          return TurnActionMove.getInstanceFromDTO(dto)
+        }
+      })
+      .filter((el) => el !== null && el !== undefined) as CompoundTurnActionType[]
 
-    console.log(instancedTurnActions)
+    instancedTurnActions.forEach(async (turnAct) => {
+      await turnAct.executeTurnAction()
+    })
   }
 
   /**

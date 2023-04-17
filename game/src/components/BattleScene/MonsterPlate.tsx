@@ -41,9 +41,12 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
       y={y - vertModifier}
     >
       <h1>{monster.name}</h1>
-      <h2>
-        {monster.currentHP}/{monster.maxHP}
-      </h2>
+      <HealthBar percent={(monster.currentHP / monster.maxHP) * 100}>
+        <div />
+        <h2>
+          {monster.currentHP}/{monster.maxHP}
+        </h2>
+      </HealthBar>
       <Tooltip show={showTooltip}>
         <p>STR: {str.value}</p>
         <p>ARM: {arm.value}</p>
@@ -73,10 +76,6 @@ const PlateContainer = styled.div<{ x: number; y: number }>`
     font-size: 1.5rem;
   }
 
-  > h2 {
-    font-size: 1.2rem;
-  }
-
   > * {
     margin: 0px !important;
   }
@@ -86,4 +85,28 @@ const Tooltip = styled.div<{ show: boolean }>`
   transition: max-height 0.4s;
   max-height: ${({ show }) => (show ? '300px' : '0')};
   overflow: hidden;
+`
+
+const HealthBar = styled.div<{ percent: number }>`
+  width: inherit;
+  background-color: darkgray;
+  display: flex;
+  justify-content: center;
+  height: 25px;
+
+  > div {
+    background-color: ${({ percent }) => {
+      return percent < 25 ? 'red' : percent <= 50 ? 'yellow' : percent <= 75 ? 'orange' : 'green'
+    }};
+    width: ${({ percent }) => percent}%;
+  }
+
+  > h2 {
+    filter: invert(0.2);
+    mix-blend-mode: difference;
+    font-size: 1.2rem;
+    position: absolute;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
 `

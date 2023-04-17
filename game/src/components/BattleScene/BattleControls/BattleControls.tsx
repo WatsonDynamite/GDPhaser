@@ -10,6 +10,7 @@ import MoveButton from './partials/MoveButton'
 import TargetingControls from './partials/TargetingControls'
 import { GridSpot } from '../../../gameObjects/gridSpot'
 import BattleDataContext from '../../BattleDataContext'
+import BattleScene from '../../../scripts/scenes/battleScene'
 
 type BattleControlsProps = {
   currentMonster: Monster
@@ -43,7 +44,7 @@ export default function BattleControls({ currentMonster, moveToNextMonster }: Ba
     const id = Array.isArray(target) ? target.map((el) => el.battleId) : target.getBattleId()!
 
     const action = new TurnActionMoveDTO(
-      `${battleScene!.socketClient.id}-${currentMonster.name}`,
+      `${BattleScene.socketClient.id}-${currentMonster.name}`,
       currentMonster.stats.dex.getTrueValue() * move.priority,
       move.id,
       id

@@ -7,6 +7,7 @@ import BattleControls from './BattleControls/BattleControls'
 import Chat from './Chat'
 import MonsterPlate from './MonsterPlate'
 import BattleDataContext from '../BattleDataContext'
+import MovePlate from './MovePlate'
 
 type BattleUIProps = {
   battleScene: BattleScene
@@ -17,22 +18,29 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
     third: {
       camera,
       renderer: { domElement }
-    },
-    socketClient
+    }
   } = battleScene
-
+  const customEventDispatcher = CustomEventDispatcher.getInstance()
   const { myMonsters, enemyMonsters } = BattleScene.getFieldMonsters()
   const [currentMonster, setCurrentMonster] = useState<number>(0)
   const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
+  const [movePlateText, setMovePlateText] = useState<string | null>(null)
 
   useEffect(() => {
-    CustomEventDispatcher.getInstance().on(CustomEvents.SHOW_BATTLE_UI, () => {
+    customEventDispatcher.on(CustomEvents.SHOW_BATTLE_UI, () => {
       setIsShowingUI(true)
     })
-    CustomEventDispatcher.getInstance().on(CustomEvents.HIDE_BATTLE_UI, () => {
+    customEventDispatcher.on(CustomEvents.HIDE_BATTLE_UI, () => {
       setIsShowingUI(false)
     })
   }, [])
+
+  customEventDispatcher.on(CustomEvents.SHOW_MOVE_PLATE, (text) => {
+    setMovePlateText(text)
+    setTimeout(() => {
+      setMovePlateText(null)
+    }, 800)
+  })
 
   function moveToNextMonster() {
     if (currentMonster === myMonsters.length - 1) {
@@ -47,13 +55,16 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
   return (
     <BattleDataContext.Provider value={battleScene}>
       <FullScreenContainerDiv>
-        <Chat socketClient={socketClient} />
-        {myMonsters.map((monster: Monster) => (
-          <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-        ))}
-        {enemyMonsters.map((monster: Monster) => (
-          <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-        ))}
+        <MovePlate text={movePlateText} />
+        <Chat socketClient={BattleScene.socketClient} />
+        {isShowingUI &&
+          myMonsters.map((monster: Monster) => (
+            <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+          ))}
+        {isShowingUI &&
+          enemyMonsters.map((monster: Monster) => (
+            <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+          ))}
         {isShowingUI && (
           <BattleControls moveToNextMonster={moveToNextMonster} currentMonster={myMonsters[currentMonster]} />
         )}
