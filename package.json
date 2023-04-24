@@ -59,7 +59,8 @@
     "three-gif-loader": "^1.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2",
-    "typescript-json-serializer": "^6.0.0"
+    "typescript-json-serializer": "^6.0.0",
+    "usehooks-ts": "^2.9.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.18.6",

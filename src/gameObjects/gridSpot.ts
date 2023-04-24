@@ -53,6 +53,10 @@ export class GridSpot extends GameObjects.GameObject {
     monster.setGridSpot(this)
   }
 
+  public removeMonster() {
+    this.monster = null
+  }
+
   public setHazard(hazard: GameObjects.GameObject) {
     this.hazard = hazard
   }

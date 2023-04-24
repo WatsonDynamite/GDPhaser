@@ -1,5 +1,5 @@
+import { TurnActionDTO } from './TurnActions/TurnAction'
 import { MonsterDTO } from './monster'
-import { TurnActionDTO } from './turnAction'
 
 export type GameState = {
   player1: string | null

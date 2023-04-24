@@ -6,6 +6,7 @@ import { Move } from './move'
 import { Stat, StatWithModifier } from './stat'
 import { StatusEffect } from './statusEffect'
 import { Type } from './type'
+import BattleScene from '../scenes/battleScene'
 
 /**
  * This is the template from which monsters are instanced.
@@ -33,12 +34,12 @@ export class Monster {
 
   /** The stats of the monster */
   stats: {
-    con: Stat
-    str: StatWithModifier
-    arm: StatWithModifier
-    wis: StatWithModifier
-    int: StatWithModifier
-    dex: StatWithModifier
+    con: Stat //HP
+    str: StatWithModifier //ATK
+    arm: StatWithModifier //DEF
+    int: StatWithModifier //SP.ATK
+    wis: StatWithModifier //SP.DEF
+    dex: StatWithModifier //SPEED
   }
 
   /** The four moves of a monster
@@ -84,6 +85,7 @@ export class Monster {
     this.type1 = types.t1
     this.type2 = types.t2
     this.maxHP = con
+    this.currentHP = con
     ;(this.stats = {
       con: new Stat(con),
       str: new StatWithModifier(str),
@@ -113,10 +115,12 @@ export class Monster {
   /** Lowers the current HP of this monster by the amount specified by DMG.
    * @param dmg: value to damage the monster with
    */
-  receiveDamage(dmg: number) {
+  async receiveDamage(dmg: number) {
     this.currentHP -= dmg
-    if (this.currentHP < 0) {
+
+    if (this.currentHP <= 0) {
       this.currentHP = 0
+      BattleScene.killMonster(this)
     }
   }
 

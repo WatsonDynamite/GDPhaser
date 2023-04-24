@@ -1,10 +1,10 @@
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
-import { TurnActionDTO } from './scripts/definitions/turnAction'
+import { TurnActionMoveDTO } from './scripts/definitions/turnAction'
 import { Message, GameState, PendingState } from './scripts/definitions/serverPayloads'
-import { getRandomValues, randomInt } from 'crypto'
 import { SocketEvents } from './scripts/definitions/enums'
+import { TurnActionDTO } from './scripts/definitions/TurnActions/TurnAction'
 
 const app = express()
 const server = http.createServer(app)
@@ -44,17 +44,19 @@ io.on('connection', (socket) => {
     message: `User ${socket.handshake.auth.username} has connected.`
   }
   chat.push(joinMsg)
-
   io.emit(SocketEvents.CHAT_MESSAGE, joinMsg)
+
   //check if there already is a player 1, if so, set current user to player 1, if not, set to player 2,
   //if there already are 2 players, everyone else is a spectator
   if (!gameState.player1) {
+    console.log('watch out')
     gameState.player1 = socket.id
     socket.on(SocketEvents.INIT_DATA, (data) => {
       const { grid } = data
       console.log(grid)
       gameState.field.player1grid = grid
       socket.emit(SocketEvents.YOU_ARE, 1)
+      console.log('found a player 1')
     })
   } else if (!gameState.player2) {
     gameState.player2 = socket.id
@@ -63,6 +65,7 @@ io.on('connection', (socket) => {
       console.log(grid)
       gameState.field.player2grid = grid
       socket.emit(SocketEvents.YOU_ARE, 2)
+      console.log('found a player 2')
 
       //two players connected, game ready
 
