@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  Phaser 3 + enable3d
+  GRIMDRIVE CLIENT
   <br>
 </h1>
 
@@ -22,13 +22,6 @@ $ npm start
 $ npm run build
 ```
 
-## JavaScript
-
-You want to use JavaScript instead of TypeScript?
-
-- Add `"checkJs": false,` to [tsconfig.json](./tsconfig.json)
-- Change the extension of all game files in [/src/scripts](./src/scripts) from `.ts` to `.js` (except `game.ts`).
-
 <h1 align="center">
   <br>
   GRIMDRIVE SERVER
@@ -46,6 +39,7 @@ Server soft. for Grimdrive to run on
 $ npm install
 
 # Start the local development server (on port 8080)
+$ cd ./src
 $ ts-node --esm server.ts
 
 # Ready for production?
