@@ -1,4 +1,5 @@
 import { Monster } from '../monster'
+import { CompoundTurnActionType } from '../turnAction'
 
 export abstract class TurnAction {
   private user: Monster
@@ -12,7 +13,7 @@ export abstract class TurnAction {
     return this.user
   }
 
-  public abstract executeTurnAction()
+  public abstract executeTurnAction(turnData: { actionMap: CompoundTurnActionType[] }, callback?)
 }
 
 export class TurnActionDTO {

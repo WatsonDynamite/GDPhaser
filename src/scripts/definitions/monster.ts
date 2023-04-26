@@ -6,7 +6,9 @@ import { Move } from './move'
 import { Stat, StatWithModifier } from './stat'
 import { StatusEffect } from './statusEffect'
 import { Type } from './type'
+import MonsterHP from '../../components/BattleScene/MonsterHP'
 import BattleScene from '../scenes/battleScene'
+import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
 
 /**
  * This is the template from which monsters are instanced.
@@ -60,6 +62,8 @@ export class Monster {
   private gridSpot: GridSpot
 
   private gameObject: FLAT.SpriteSheet
+
+  private HPBar: typeof MonsterHP
 
   /** the current HP value. Think of this variable as the actual life bar. */
   currentHP: number
@@ -115,20 +119,22 @@ export class Monster {
   /** Lowers the current HP of this monster by the amount specified by DMG.
    * @param dmg: value to damage the monster with
    */
-  async receiveDamage(dmg: number) {
+  receiveDamage(dmg: number) {
     this.currentHP -= dmg
 
     if (this.currentHP <= 0) {
       this.currentHP = 0
-      BattleScene.killMonster(this)
     }
+
+    CustomEventDispatcher.getInstance().emit(CustomEvents.REFRESH_UI)
   }
 
   /** Raises the current HP of this monster by the amount specified by DMG.
-   * @param dmg: value to heal the monster with
+   * @param heal: value to heal the monster with
    * */
-  healDamage(dmg: number) {
-    this.currentHP += dmg
+  healDamage(heal: number) {
+    this.currentHP += heal
+
     if (this.currentHP > this.maxHP) {
       this.currentHP = this.maxHP
     }

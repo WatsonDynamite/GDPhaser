@@ -9,9 +9,10 @@ import { GameState, Message } from '../definitions/serverPayloads'
 import { CompoundTurnActionDTOType, CompoundTurnActionType, TurnActionMoveDTO } from '../definitions/turnAction'
 import { JsonSerializer } from 'typescript-json-serializer'
 import { Category, SocketEvents, Targeting } from '../definitions/enums'
-import { TurnActionDTO } from '../definitions/TurnActions/TurnAction'
+import { TurnAction, TurnActionDTO } from '../definitions/TurnActions/TurnAction'
 import { moveList } from '../data/moveList'
 import { TurnActionDamageMoveSingleTarget } from '../definitions/TurnActions/TurnActionDamageMoveSingleTarget'
+import { sm } from 'jssm'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -245,38 +246,37 @@ export default class BattleScene extends Scene3D {
   }
 
   executeTurnActions(actions: CompoundTurnActionDTOType[]) {
-    const instancedTurnActions = actions
-      .map((dto) => {
-        //time to make these real
-        //check what type of action this is
-        if (dto.moveID) {
-          const move = moveList.get(dto.moveID)!
+    const instancedTurnActions = {
+      actionMap: actions
+        .map((dto) => {
+          //time to make these real
+          //check what type of action this is
+          if (dto.moveID) {
+            const move = moveList.get(dto.moveID)!
 
-          if (move.category !== Category.STATUS) {
-            switch (move.targeting.targeting) {
-              case Targeting.SINGLE_ENEMY:
-              case Targeting.SINGLE_TEAMMATE:
-                return TurnActionDamageMoveSingleTarget.getInstanceFromDTO(dto)
+            if (move.category !== Category.STATUS) {
+              switch (move.targeting.targeting) {
+                case Targeting.SINGLE_ENEMY:
+                case Targeting.SINGLE_TEAMMATE:
+                  return TurnActionDamageMoveSingleTarget.getInstanceFromDTO(dto)
+              }
             }
           }
-        }
+        })
+        .filter((el) => el !== null && el !== undefined) as CompoundTurnActionType[]
+    }
+
+    let i = 0
+
+    const globalTurnSM = sm`Flip 'next' -> Flop 'next' -> Flip;`
+    globalTurnSM.hook_any_action(() => {
+      const turnAct = instancedTurnActions.actionMap[i]
+      turnAct.executeTurnAction(instancedTurnActions, () => {
+        i++
+        globalTurnSM.do('next')
       })
-      .filter((el) => el !== null && el !== undefined) as CompoundTurnActionType[]
-
-    instancedTurnActions.forEach((turnAct) => {
-      turnAct.executeTurnAction()
     })
-  }
-
-  public static async killMonster(mon: Monster) {
-    //write in chat that the monster is dead
-    this.socketClient.emit(SocketEvents.CHAT_MESSAGE, `${mon.name} has been defeated!`)
-
-    //TODO: execute death anim
-    //remove monster from field
-    const gridSpot = mon.getGridSpot()
-    gridSpot.getMonster()?.getGameObject().remove()
-    gridSpot.removeMonster()
+    globalTurnSM.do('next')
   }
 
   /**

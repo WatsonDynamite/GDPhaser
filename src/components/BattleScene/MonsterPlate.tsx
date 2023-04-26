@@ -16,7 +16,6 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
     getScreenPositionFromWorldSpace(monster.getGridSpot().spotModel.position, camera, canvas)
   )
   const [showTooltip, setShowTooltip] = React.useState<boolean>(false)
-  const [hpToShow, setHpToShow] = React.useState<number>(monster.maxHP)
   const {
     stats: { arm, dex, int, str, wis },
     type1,

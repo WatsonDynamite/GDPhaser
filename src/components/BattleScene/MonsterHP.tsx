@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useInterval } from 'usehooks-ts'
+import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
 
 interface MonsterHPProps {
   currentHP: number
@@ -9,7 +10,10 @@ interface MonsterHPProps {
 
 export default function MonsterHP({ currentHP, maxHP }: MonsterHPProps) {
   return (
-    <HealthBar percent={(currentHP / maxHP) * 100}>
+    <HealthBar
+      onTransitionEnd={() => CustomEventDispatcher.getInstance().emit(CustomEvents.ON_HP_BAR_TRANSITION_END, currentHP)}
+      percent={(currentHP / maxHP) * 100}
+    >
       <div />
       <h2>
         {currentHP}/{maxHP}
@@ -30,7 +34,7 @@ const HealthBar = styled.div<{ percent: number }>`
       return percent < 25 ? 'red' : percent <= 50 ? 'yellow' : percent <= 75 ? 'orange' : 'green'
     }};
     width: ${({ percent }) => percent}%;
-    transition: width 0.2s ease-in-out;
+    transition: width 0.5s ease-in-out;
   }
 
   > h2 {
