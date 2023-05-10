@@ -20,11 +20,16 @@ export enum CustomEvents {
   HIDE_BATTLE_UI = 'hide_battle_ui', //tells battle scene UI to hide itself
   SHOW_BATTLE_UI = 'show_battle_ui', //tells battle scene UI to show itself
   SHOW_MOVE_PLATE = 'show_move_plate', //tells battle UI to display the move's name
+  REFRESH_UI = 'refresh_ui', //refreshes UI
+
+  ON_HP_BAR_TRANSITION_END = 'on_hp_bar_transition_end', //tells turn state machine to continue after depleting the HP of the monster
 
   INIT_CONNECT_UI = 'init_connect_ui', //injects connection screen UI
   INIT_WAITING_FOR_PLAYERS_UI = 'init_waiting_for_players_ui', //injects "waiting for players..." UI
 
   INIT_BATTLE_SCENE = 'init_battle_scene', //tells scene manager to load battle scene
 
-  QUEUE_TURN_ACTION = 'queue_turn_action'
+  QUEUE_TURN_ACTION = 'queue_turn_action', // queues a turn action to the buffer to send to the server
+  READY_FOR_OPPONENT = 'ready_for_opponent', //sets the UI to show the "waiting for opponent..." message
+  BEGIN_TURN = 'begin_turn' //sets the UI to only show the monsters' health bars
 }

@@ -6,17 +6,13 @@ import { io, Socket } from 'socket.io-client'
 import { venusaur, blastoise, charizard, InstanceMonsterFromServerData } from '../data/monsterList'
 import { Monster, MonsterDTO } from '../definitions/monster'
 import { GameState, Message } from '../definitions/serverPayloads'
-import {
-  CompoundTurnActionDTOType,
-  CompoundTurnActionType,
-  TurnAction,
-  TurnActionDTO,
-  TurnActionMove,
-  TurnActionMoveDTO
-} from '../definitions/turnAction'
+import { CompoundTurnActionDTOType, CompoundTurnActionType, TurnActionMoveDTO } from '../definitions/turnAction'
 import { JsonSerializer } from 'typescript-json-serializer'
-import { SocketEvents } from '../definitions/enums'
-import { act } from '@react-three/fiber'
+import { Category, SocketEvents, Targeting } from '../definitions/enums'
+import { TurnAction, TurnActionDTO } from '../definitions/TurnActions/TurnAction'
+import { moveList } from '../data/moveList'
+import { TurnActionDamageMoveSingleTarget } from '../definitions/TurnActions/TurnActionDamageMoveSingleTarget'
+import { sm } from 'jssm'
 
 export default class BattleScene extends Scene3D {
   constructor() {
@@ -37,7 +33,7 @@ export default class BattleScene extends Scene3D {
   //in the client, the player is always player 1 and the opponent is always player 2
   //but in the server this might not be the case.
   //for the players to get the correct information, we need to know who's who
-  private whoami: number
+  public static whoami: number
 
   //actions to send to the server
   actionQueue: TurnActionDTO[]
@@ -50,9 +46,8 @@ export default class BattleScene extends Scene3D {
     this.accessThirdDimension()
     this.setScene(() => {
       BattleScene.socketClient = data.socketClient
-      console.log(data)
-      BattleScene.socketClient.on('youAre', (youAreData) => {
-        this.whoami = youAreData
+      BattleScene.socketClient.on(SocketEvents.YOU_ARE, (youAreData) => {
+        BattleScene.whoami = youAreData
       })
 
       const playerMonsterDataForServer: { monster: MonsterDTO; row: number; col: number }[] = []
@@ -90,6 +85,7 @@ export default class BattleScene extends Scene3D {
 
       BattleScene.socketClient.on(SocketEvents.TURNS_READY, (turnData: CompoundTurnActionDTOType[]) => {
         this.executeTurnActions(turnData)
+        this.EventDispatcher.emit(CustomEvents.BEGIN_TURN)
       })
     })
   }
@@ -177,7 +173,7 @@ export default class BattleScene extends Scene3D {
   refreshGameState(data: GameState) {
     console.log(data)
     const { field } = data
-    const enemyGridFromServer = this.whoami === 1 ? field.player2grid : field.player1grid
+    const enemyGridFromServer = BattleScene.whoami === 1 ? field.player2grid : field.player1grid
     //this.enemyGrid = enemyGrid
 
     enemyGridFromServer.forEach(({ monster, row, col }) => {
@@ -240,8 +236,8 @@ export default class BattleScene extends Scene3D {
       //send to server
       try {
         const serializedActionArray = this.serializer.serializeObjectArray(this.actionQueue)
-        this.EventDispatcher.emit(CustomEvents.HIDE_BATTLE_UI)
         BattleScene.socketClient.emit('sendTurnActions', serializedActionArray)
+        this.EventDispatcher.emit(CustomEvents.READY_FOR_OPPONENT)
         this.actionQueue = []
       } catch (err) {
         console.error(err)
@@ -250,19 +246,37 @@ export default class BattleScene extends Scene3D {
   }
 
   executeTurnActions(actions: CompoundTurnActionDTOType[]) {
-    const instancedTurnActions = actions
-      .map((dto) => {
-        //time to make these real
-        //check what type of action this is
-        if (dto.moveID) {
-          return TurnActionMove.getInstanceFromDTO(dto)
-        }
-      })
-      .filter((el) => el !== null && el !== undefined) as CompoundTurnActionType[]
+    const instancedTurnActions = {
+      actionMap: actions
+        .map((dto) => {
+          //time to make these real
+          //check what type of action this is
+          if (dto.moveID) {
+            const move = moveList.get(dto.moveID)!
 
-    instancedTurnActions.forEach(async (turnAct) => {
-      await turnAct.executeTurnAction()
+            if (move.category !== Category.STATUS) {
+              switch (move.targeting.targeting) {
+                case Targeting.SINGLE_ENEMY:
+                case Targeting.SINGLE_TEAMMATE:
+                  return TurnActionDamageMoveSingleTarget.getInstanceFromDTO(dto)
+              }
+            }
+          }
+        })
+        .filter((el) => el !== null && el !== undefined) as CompoundTurnActionType[]
+    }
+
+    let i = 0
+
+    const globalTurnSM = sm`Flip 'next' -> Flop 'next' -> Flip;`
+    globalTurnSM.hook_any_action(() => {
+      const turnAct = instancedTurnActions.actionMap[i]
+      turnAct.executeTurnAction(instancedTurnActions, () => {
+        i++
+        globalTurnSM.do('next')
+      })
     })
+    globalTurnSM.do('next')
   }
 
   /**

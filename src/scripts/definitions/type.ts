@@ -8,70 +8,246 @@ export enum Type {
   ELECTRIC = 'electric',
   TOXIC = 'toxic',
   SHADOW = 'shadow',
-  ESP = 'esp',
   LIGHT = 'light',
+  MYSTIC = 'mystic',
   EARTH = 'earth',
   METAL = 'metal',
   WIND = 'wind',
+  BEAST = 'beast',
   ARCANE = 'arcane'
 }
 
-export const typeChart = [
-  /*WATR*/ [
-    /*NON*/ 1, /*WTR*/ 0.5, /*FIR*/ 2, /*NTR*/ 0.5, /*ICE*/ 0.5, /*ELC*/ 2, /*TOX*/ 2, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 2, /*MTL*/ 1, /*WND*/ 1, /*ARC*/ 1
-  ],
-  /*FIRE*/ [
-    /*NON*/ 1, /*WTR*/ 0.5, /*FIR*/ 0.5, /*NTR*/ 2, /*ICE*/ 2, /*ELC*/ 1, /*TOX*/ 2, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 2, /*WND*/ 1, /*ARC*/ 1
-  ],
-  /*NATR*/ [
-    /*NON*/ 1, /*WTR*/ 2, /*FIR*/ 0.5, /*NTR*/ 0.5, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 0.5, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 2, /*MTL*/ 0.5, /*WND*/ 0.5, /*ARC*/ 1
-  ],
-  /*ICE */ [
-    /*NON*/ 1, /*WTR*/ 0.5, /*FIR*/ 2, /*NTR*/ 2, /*ICE*/ 0.5, /*ELC*/ 1, /*TOX*/ 1, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 0, /*MTL*/ 2, /*WND*/ 2, /*ARC*/ 1
-  ],
-  /*ELEC*/ [
-    /*NON*/ 1, /*WTR*/ 2, /*FIR*/ 1, /*NTR*/ 0.5, /*ICE*/ 1, /*ELC*/ 0, /*TOX*/ 1, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 0, /*MTL*/ 2, /*WND*/ 2, /*ARC*/ 1
-  ],
-  /*TOX */ [
-    /*NON*/ 1, /*WTR*/ 2, /*FIR*/ 1, /*NTR*/ 2, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 0, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 0, /*WND*/ 1, /*ARC*/ 1
-  ],
-  /*SHDW*/ [
-    /*NON*/ 1, /*WTR*/ 1, /*FIR*/ 1, /*NTR*/ 1, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 0.5, /*SHD*/ 0.5, /*MND*/ 2, /*LGT*/ 2,
-    /*ERT*/ 1, /*MTL*/ 1, /*WND*/ 1, /*ARC*/ 0.5
-  ],
-  /*MIND*/ [
-    /*NON*/ 1, /*WTR*/ 1, /*FIR*/ 1, /*NTR*/ 1, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 2, /*SHD*/ 0.5, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 1, /*WND*/ 1, /*ARC*/ 1
-  ],
-  /*LIGH*/ [
-    /*NON*/ 1, /*WTR*/ 1, /*FIR*/ 0.5, /*NTR*/ 1, /*ICE*/ 2, /*ELC*/ 1, /*TOX*/ 1, /*SHD*/ 2, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 0.5, /*WND*/ 1, /*ARC*/ 0.5
-  ],
-  /*ERTH*/ [
-    /*NON*/ 1, /*WTR*/ 2, /*FIR*/ 1, /*NTR*/ 1, /*ICE*/ 2, /*ELC*/ 2, /*TOX*/ 1, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 2, /*WND*/ 0, /*ARC*/ 1
-  ],
-  /*METL*/ [
-    /*NON*/ 1, /*WTR*/ 0.5, /*FIR*/ 0.5, /*NTR*/ 1, /*ICE*/ 2, /*ELC*/ 0.5, /*TOX*/ 1, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 2,
-    /*ERT*/ 1, /*MTL*/ 0.5, /*WND*/ 1, /*ARC*/ 2
-  ],
-  /*WIND*/ [
-    /*NON*/ 1, /*WTR*/ 1, /*FIR*/ 2, /*NTR*/ 2, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 1, /*SHD*/ 1, /*MND*/ 1, /*LGT*/ 1,
-    /*ERT*/ 1, /*MTL*/ 2, /*WND*/ 0.5, /*ARC*/ 1
-  ],
-  /*ARCN*/ [
-    /*NON*/ 1, /*WTR*/ 1, /*FIR*/ 1, /*NTR*/ 1, /*ICE*/ 1, /*ELC*/ 1, /*TOX*/ 1, /*SHD*/ 2, /*MND*/ 1, /*LGT*/ 0.5,
-    /*ERT*/ 1, /*MTL*/ 0.5, /*WND*/ 1, /*ARC*/ 2
-  ]
-]
+/**
+ * this assumes attacker -> defender, for instance the first line is WATER as an attacker and the second is WATER as a defender
+ */
+export const typeChart = {
+  [Type.WATER]: {
+    [Type.WATER]: 0.5,
+    [Type.FIRE]: 2,
+    [Type.NATURE]: 0.5,
+    [Type.ICE]: 0.5,
+    [Type.ELECTRIC]: 2,
+    [Type.TOXIC]: 2,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 2,
+    [Type.METAL]: 1,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 0.5
+  },
+  [Type.FIRE]: {
+    [Type.WATER]: 0.5,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 2,
+    [Type.ICE]: 2,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 2,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 0.5,
+    [Type.METAL]: 2,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 0.5,
+    [Type.ARCANE]: 0.5
+  },
+  [Type.NATURE]: {
+    [Type.WATER]: 2,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 0.5,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 0.5,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 2,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 0.5,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.ICE]: {
+    [Type.WATER]: 0.5,
+    [Type.FIRE]: 2,
+    [Type.NATURE]: 2,
+    [Type.ICE]: 0.5,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 2,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.ELECTRIC]: {
+    [Type.WATER]: 2,
+    [Type.FIRE]: 1,
+    [Type.NATURE]: 0.5,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 0,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 0,
+    [Type.METAL]: 2,
+    [Type.WIND]: 2,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.TOXIC]: {
+    [Type.WATER]: 2,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 2,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 0,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 0,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 2,
+    [Type.ARCANE]: 1
+  },
+  [Type.SHADOW]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 1,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 0.5,
+    [Type.SHADOW]: 0.5,
+    [Type.LIGHT]: 2,
+    [Type.MYSTIC]: 2,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 1,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.LIGHT]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 2,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 2,
+    [Type.LIGHT]: 0.5,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.MYSTIC]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 1,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 2,
+    [Type.SHADOW]: 0.5,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 0.5,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 1,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 2,
+    [Type.ARCANE]: 2
+  },
+  [Type.EARTH]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 2,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 2,
+    [Type.TOXIC]: 2,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 0.5,
+    [Type.METAL]: 2,
+    [Type.WIND]: 0,
+    [Type.BEAST]: 0.5,
+    [Type.ARCANE]: 1
+  },
+  [Type.METAL]: {
+    [Type.WATER]: 0.5,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 2,
+    [Type.ELECTRIC]: 0.5,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 2,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 0.5,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 2,
+    [Type.ARCANE]: 1
+  },
+  [Type.WIND]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 2,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 2,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 2,
+    [Type.METAL]: 1,
+    [Type.WIND]: 0.5,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 1
+  },
+  [Type.BEAST]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 0.5,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 1,
+    [Type.LIGHT]: 1,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 0.5,
+    [Type.BEAST]: 1,
+    [Type.ARCANE]: 2
+  },
+  [Type.ARCANE]: {
+    [Type.WATER]: 1,
+    [Type.FIRE]: 1,
+    [Type.NATURE]: 1,
+    [Type.ICE]: 1,
+    [Type.ELECTRIC]: 1,
+    [Type.TOXIC]: 1,
+    [Type.SHADOW]: 2,
+    [Type.LIGHT]: 0.5,
+    [Type.MYSTIC]: 1,
+    [Type.EARTH]: 1,
+    [Type.METAL]: 0.5,
+    [Type.WIND]: 1,
+    [Type.BEAST]: 2,
+    [Type.ARCANE]: 2
+  }
+}
 
-export function effectiveness(attackType: number, defendType: number) {
+export function effectiveness(attackType: Type, defendType: Type) {
   //receives two types, and returns the effectiveness of the first type towards the second in the form of a float.
   return typeChart[attackType][defendType]
 }

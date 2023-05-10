@@ -6,6 +6,9 @@ import { Move } from './move'
 import { Stat, StatWithModifier } from './stat'
 import { StatusEffect } from './statusEffect'
 import { Type } from './type'
+import MonsterHP from '../../components/BattleScene/MonsterHP'
+import BattleScene from '../scenes/battleScene'
+import CustomEventDispatcher, { CustomEvents } from '../behaviors/CustomEventDispatcher'
 
 /**
  * This is the template from which monsters are instanced.
@@ -33,12 +36,12 @@ export class Monster {
 
   /** The stats of the monster */
   stats: {
-    con: Stat
-    str: StatWithModifier
-    arm: StatWithModifier
-    wis: StatWithModifier
-    int: StatWithModifier
-    dex: StatWithModifier
+    con: Stat //HP
+    str: StatWithModifier //ATK
+    arm: StatWithModifier //DEF
+    int: StatWithModifier //SP.ATK
+    wis: StatWithModifier //SP.DEF
+    dex: StatWithModifier //SPEED
   }
 
   /** The four moves of a monster
@@ -59,6 +62,8 @@ export class Monster {
   private gridSpot: GridSpot
 
   private gameObject: FLAT.SpriteSheet
+
+  private HPBar: typeof MonsterHP
 
   /** the current HP value. Think of this variable as the actual life bar. */
   currentHP: number
@@ -84,6 +89,7 @@ export class Monster {
     this.type1 = types.t1
     this.type2 = types.t2
     this.maxHP = con
+    this.currentHP = con
     ;(this.stats = {
       con: new Stat(con),
       str: new StatWithModifier(str),
@@ -115,16 +121,20 @@ export class Monster {
    */
   receiveDamage(dmg: number) {
     this.currentHP -= dmg
-    if (this.currentHP < 0) {
+
+    if (this.currentHP <= 0) {
       this.currentHP = 0
     }
+
+    CustomEventDispatcher.getInstance().emit(CustomEvents.REFRESH_UI)
   }
 
   /** Raises the current HP of this monster by the amount specified by DMG.
-   * @param dmg: value to heal the monster with
+   * @param heal: value to heal the monster with
    * */
-  healDamage(dmg: number) {
-    this.currentHP += dmg
+  healDamage(heal: number) {
+    this.currentHP += heal
+
     if (this.currentHP > this.maxHP) {
       this.currentHP = this.maxHP
     }

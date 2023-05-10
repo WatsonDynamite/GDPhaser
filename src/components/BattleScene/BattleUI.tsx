@@ -25,13 +25,25 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
   const [currentMonster, setCurrentMonster] = useState<number>(0)
   const [isShowingUI, setIsShowingUI] = useState<boolean>(true)
   const [movePlateText, setMovePlateText] = useState<string | null>(null)
+  const [isShowingMonsterPlates, setIsShowingMonsterPlates] = useState<boolean>(false)
+  const [isShowingWaitingForPlayer, setIsShowingWaitingForPlayer] = useState<boolean>(false)
 
   useEffect(() => {
     customEventDispatcher.on(CustomEvents.SHOW_BATTLE_UI, () => {
       setIsShowingUI(true)
+      setIsShowingMonsterPlates(true)
     })
     customEventDispatcher.on(CustomEvents.HIDE_BATTLE_UI, () => {
       setIsShowingUI(false)
+      setIsShowingMonsterPlates(false)
+    })
+    customEventDispatcher.on(CustomEvents.READY_FOR_OPPONENT, () => {
+      setIsShowingWaitingForPlayer(true)
+      setIsShowingUI(false)
+    })
+    customEventDispatcher.on(CustomEvents.BEGIN_TURN, () => {
+      setIsShowingUI(false)
+      setIsShowingMonsterPlates(true)
     })
   }, [])
 
@@ -57,17 +69,16 @@ export default function BattleUI({ battleScene }: BattleUIProps) {
       <FullScreenContainerDiv>
         <MovePlate text={movePlateText} />
         <Chat socketClient={BattleScene.socketClient} />
-        {isShowingUI &&
-          myMonsters.map((monster: Monster) => (
-            <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-          ))}
-        {isShowingUI &&
-          enemyMonsters.map((monster: Monster) => (
-            <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
-          ))}
+        {myMonsters.map((monster: Monster) => (
+          <MonsterPlate key={`1-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+        ))}
+        {enemyMonsters.map((monster: Monster) => (
+          <MonsterPlate key={`2-${monster.name}`} monster={monster} camera={camera} canvas={domElement} />
+        ))}
         {isShowingUI && (
           <BattleControls moveToNextMonster={moveToNextMonster} currentMonster={myMonsters[currentMonster]} />
         )}
+        {isShowingWaitingForPlayer && <h1>WAITING FOR OPPONENT</h1>}
       </FullScreenContainerDiv>
     </BattleDataContext.Provider>
   )

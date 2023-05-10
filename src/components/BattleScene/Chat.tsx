@@ -38,9 +38,16 @@ export default function Chat({ socketClient }: ChatProps) {
     <ChatContainer>
       <Content>
         {messages.map((msg: Message, idx) => {
+          const messageMap = msg.message.split('\n')
           return (
-            <div key={`${msg.user} - ${idx}`}>
-              {msg.user}: {msg.message}
+            <div key={`chat-${idx}`}>
+              {msg.user ? `${msg.user}: ` : ''}
+              {messageMap.map((el, idx2) => (
+                <React.Fragment key={`chat-${idx}-line${idx2}`}>
+                  {el}
+                  {idx2 !== messageMap.length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </div>
           )
         })}
