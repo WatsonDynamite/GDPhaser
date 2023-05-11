@@ -4,23 +4,29 @@ import { createRoot, Root } from 'react-dom/client'
 import BattleUI from '../../components/BattleScene/BattleUI'
 import BattleScene from '../scenes/battleScene'
 import CustomEventDispatcher, { CustomEvents } from './CustomEventDispatcher'
-import ConnectToServerScene from '../scenes/connectToServerScene'
+import titleUIScene from '../scenes/titleUIScene'
 import ConnectToServer from '../../components/ConnectToServerScene/ConnectToServer'
-import { Socket } from 'socket.io-client'
-import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import WaitingForPlayers from '../../components/ConnectToServerScene/WaitingForPlayers'
+import TitleScreen from '../../components/TitleScreen'
+import Teambuilder from '../../components/Teambuilder'
 
 export function init() {}
 
 let root = createRoot(document.getElementById('react-root')!)
 const events = CustomEventDispatcher.getInstance()
 
+events.on(CustomEvents.INIT_TITLE_SCREEN, (titleUIScene: titleUIScene) =>
+  root.render(<TitleScreen scene={titleUIScene} />)
+)
+
+events.on(CustomEvents.INIT_TEAMBUILDER, () => root.render(<Teambuilder />))
+
 events.on(CustomEvents.INIT_BATTLE_UI, (battleScene: BattleScene) =>
   root.render(<BattleUI battleScene={battleScene} />)
 )
 
-events.on(CustomEvents.INIT_CONNECT_UI, (connectToServerScene: ConnectToServerScene) =>
-  root.render(<ConnectToServer scene={connectToServerScene} />)
+events.on(CustomEvents.INIT_CONNECT_UI, (titleUIScene: titleUIScene) =>
+  root.render(<ConnectToServer scene={titleUIScene} />)
 )
 
 events.on(CustomEvents.INIT_WAITING_FOR_PLAYERS_UI, () => {

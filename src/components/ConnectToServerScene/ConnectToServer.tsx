@@ -1,14 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
-import ConnectToServerScene from '../../scripts/scenes/connectToServerScene'
+import titleUIScene from '../../scripts/scenes/titleUIScene'
 import FullScreenContainerDiv from '../FullScreenContainer'
 import logogif from '../../assets/UISprites/logo.gif'
 import dirt from '../../assets/materials/dirt.jpg'
-import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
 import { io } from 'socket.io-client'
+import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
 
 export type ConnectToServerProps = {
-  scene: ConnectToServerScene
+  scene: titleUIScene
 }
 
 export default function ConnectToServer({ scene }: ConnectToServerProps) {
@@ -37,6 +37,12 @@ export default function ConnectToServer({ scene }: ConnectToServerProps) {
   return (
     <FullScreenContainerDiv>
       <Container>
+        <button
+          style={{ position: 'absolute', top: '1%', left: '1%', margin: 0 }}
+          onClick={() => CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_TITLE_SCREEN)}
+        >
+          {'<<< Back'}
+        </button>
         <img src={logogif} />
 
         <div>Player Name</div>

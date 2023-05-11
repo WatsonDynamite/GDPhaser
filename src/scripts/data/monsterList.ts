@@ -5,7 +5,7 @@ import { moveList } from './moveList'
 import _ from 'lodash'
 
 export const charizard = new Monster(
-  'test-charizard',
+  '0001',
   'charizard',
   { t1: Type.FIRE, t2: Type.WIND },
   100,
@@ -24,7 +24,7 @@ export const charizard = new Monster(
 )
 
 export const blastoise = new Monster(
-  'test-blastoise',
+  '0002',
   'blastoise',
   { t1: Type.WATER },
   100,
@@ -43,7 +43,7 @@ export const blastoise = new Monster(
 )
 
 export const venusaur = new Monster(
-  'test-venusaur',
+  '0003',
   'venusaur',
   { t1: Type.NATURE, t2: Type.TOXIC },
   100,
@@ -61,10 +61,14 @@ export const venusaur = new Monster(
   }
 )
 
-const monsterList = new Map<string, Monster>()
+export const monsterList = new Map<string, Monster>()
   .set(charizard.id, charizard)
   .set(blastoise.id, blastoise)
   .set(venusaur.id, venusaur)
+
+export function InstanceMonsterFromID(id: string): Monster {
+  return _.cloneDeep(monsterList.get(id)) as Monster
+}
 
 export function InstanceMonsterFromServerData(data: MonsterDTO): Monster {
   console.log(data)

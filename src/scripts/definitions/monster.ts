@@ -63,7 +63,7 @@ export class Monster {
 
   private gameObject: FLAT.SpriteSheet
 
-  private HPBar: typeof MonsterHP
+  private nickname: string | null
 
   /** the current HP value. Think of this variable as the actual life bar. */
   currentHP: number
@@ -85,6 +85,7 @@ export class Monster {
     sprites: MonsterSpriteSet
   ) {
     this.id = id
+    this.nickname = null
     this.name = name
     this.type1 = types.t1
     this.type2 = types.t2
@@ -106,6 +107,20 @@ export class Monster {
     this.statusEffect = undefined //this definitely should not stay undefined
     this.ability = ability
     this.sprites = sprites
+  }
+
+  /**
+   * set nickname
+   */
+  setNickname(newNick: string) {
+    this.nickname = newNick
+  }
+
+  /**
+   * get nickname
+   */
+  getNickname() {
+    return this.nickname
   }
 
   /**
@@ -195,6 +210,7 @@ export class Monster {
   convertToDTO(): MonsterDTO {
     return {
       id: this.id,
+      nickname: this.nickname,
       battleId: this.battleId!,
       currentHP: this.currentHP,
       statusEffect: this.statusEffect
@@ -224,6 +240,7 @@ export type MonsterSpriteSet = {
 
 export type MonsterDTO = {
   id: string
+  nickname: string | null
   battleId: string
   currentHP: number
   statusEffect?: {

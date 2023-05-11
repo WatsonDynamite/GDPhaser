@@ -1,24 +1,10 @@
-import { Object3D, Vector2, Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { Targeting } from './scripts/definitions/enums'
 import { MoveTargeting } from './scripts/definitions/turnAction'
 
-type modelTypes =
-  | 'mesh'
-  | 'material'
-  | 'extrude'
-  | 'existing'
-  | 'plane'
-  | 'ground'
-  | 'box'
-  | 'sphere'
-  | 'cylinder'
-  | 'cone'
-  | 'torus'
-
 export function getScreenPositionFromWorldSpace(
   position: Vector3,
-  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera,
-  canvas: HTMLCanvasElement
+  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera
 ): Vector2 {
   const positionCpy = new Vector3(position.x, position.y, position.z)
   const vector = positionCpy.project(camera)

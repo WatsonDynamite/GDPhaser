@@ -64,6 +64,7 @@ export default class BattleScene extends Scene3D {
             playerMonsterDataForServer.push({
               monster: {
                 id: monster.id,
+                nickname: monster.getNickname(),
                 battleId: monsterBattleId,
                 currentHP: monster.currentHP
               },
