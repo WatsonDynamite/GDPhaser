@@ -1,26 +1,76 @@
 import React from 'react'
-import FullScreenContainerDiv from '../FullScreenContainer'
 import styled from 'styled-components'
-import dirt from '../../assets/materials/dirt.jpg'
-import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
+import store from 'store'
 import { AiFillPlusCircle } from 'react-icons/ai'
 import { RotatingLines } from 'react-loader-spinner'
-import { loadTeams } from './utils'
+import FullScreenContainerDiv from '../FullScreenContainer'
+import dirt from '../../assets/materials/dirt.jpg'
+import CustomEventDispatcher, { CustomEvents } from '../../scripts/behaviors/CustomEventDispatcher'
+import { addTeam, decryptTeam, encryptTeam, loadTeams } from './utils'
 import { Team } from '../../scripts/definitions/team'
 import TeamItem from './partials/TeamItem'
+import Modal from '../Modal'
 
 function Teambuilder() {
   const [loading, setLoading] = React.useState<boolean>(true)
   const [teams, setTeams] = React.useState<Team[]>()
+  const [isImportModalOpen, setIsImportModalOpen] = React.useState<boolean>(false)
+  const [isExportModalOpen, setIsExportModalOpen] = React.useState<Team | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState<number | null>(null)
+  const [importCode, setImportCode] = React.useState<string>('')
+  const [importError, setImportError] = React.useState<boolean>(false)
+
+  function exportTeam(team: Team) {
+    navigator.clipboard.writeText(encryptTeam(team))
+    setIsExportModalOpen(null)
+  }
+
+  function importTeam() {
+    try {
+      decryptTeam(importCode)
+      addTeam(importCode)
+      loadTeamData()
+      setImportCode('')
+      setImportError(false)
+      setIsImportModalOpen(false)
+    } catch (err) {
+      console.error(err)
+      setImportError(true)
+    }
+  }
+
+  function loadTeamData() {
+    try {
+      const teams = loadTeams(() => {
+        setLoading(false)
+      })
+      if (teams) {
+        setTeams(teams)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  function deleteTeam() {
+    let teamStore: string = store.get('teams', '')
+    let splitTeams = teamStore.split(';').map((str) => str + ';')
+    splitTeams.pop()
+    splitTeams.splice(isDeleteModalOpen!, 1)
+    const splitTeamsString = splitTeams.join('')
+    store.set('teams', splitTeamsString)
+
+    setIsDeleteModalOpen(null)
+    loadTeamData()
+  }
 
   React.useEffect(() => {
-    const teams = loadTeams(() => {
-      setLoading(false)
-    })
-    if (teams) {
-      setTeams(teams)
-    }
+    loadTeamData()
   }, [])
+  ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
+  ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
+  ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
+  ;('My%20Test%20Team3:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
 
   return (
     <FullScreenContainerDiv style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -28,6 +78,31 @@ function Teambuilder() {
       <BackButton onClick={() => CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_TITLE_SCREEN)}>
         {'<< Back'}
       </BackButton>
+      {/** IMPORT MODAL */}
+      <Modal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)}>
+        <div>Import Team</div>
+        <p>Paste the team code below and click "Import"</p>
+        <input value={importCode} onChange={(e) => setImportCode(e.currentTarget.value)}></input>
+        <button onClick={() => importTeam()}>Import</button>
+        {importError && <p style={{ color: 'red' }}>Error importing, check if you copied the string correctly!</p>}
+      </Modal>
+
+      {/** EXPORT MODAL */}
+      <Modal isOpen={!!isExportModalOpen} onClose={() => setIsExportModalOpen(null)}>
+        <h3>Export Team</h3>
+        <p>Click the button below to copy the team's code to your clipboard.</p>
+        <button onClick={() => exportTeam(isExportModalOpen!)}>Copy to Clipboard</button>
+      </Modal>
+
+      {/** DELETE MODAL */}
+      <Modal isOpen={!!isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(null)}>
+        <h3>Delete Team</h3>
+        <p>Are you sure you want to remove this team? Deleted teams are lost permanently!</p>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => deleteTeam()}>Yes</button>
+          <button onClick={() => setIsDeleteModalOpen(null)}>No</button>
+        </div>
+      </Modal>
       <Grid>
         <h3 style={{ margin: 0, gridRow: 1, gridColumn: 1, verticalAlign: 'middle' }}>Teambuilder</h3>
         <RoundedContainer style={{ gridRow: '2' }}>
@@ -36,17 +111,26 @@ function Teambuilder() {
               <RotatingLines strokeColor="gray" />
             ) : (
               <React.Fragment>
-                {teams?.map((team) => (
-                  <TeamItem key={team.name} team={team} />
-                ))}
                 <AddButton>
                   <AiFillPlusCircle style={{ fill: 'white', width: '40px', height: '40px' }} />
                 </AddButton>
+                {teams?.map((team, idx) => (
+                  <TeamItem
+                    key={`${team.name}-${idx}`}
+                    team={team}
+                    onClickEdit={() => {}}
+                    onClickDuplicate={() => {}}
+                    onClickExport={() => setIsExportModalOpen(team)}
+                    onClickDelete={() => setIsDeleteModalOpen(idx)}
+                  />
+                ))}
               </React.Fragment>
             )}
           </TeamContainer>
         </RoundedContainer>
-        <LoadFromCodeButton style={{ gridColumn: '2', gridRow: '1' }}>Load from code</LoadFromCodeButton>
+        <LoadFromCodeButton onClick={() => setIsImportModalOpen(true)} style={{ gridColumn: '2', gridRow: '1' }}>
+          Load from code
+        </LoadFromCodeButton>
         <RoundedContainer style={{ gridColumn: '2', gridRow: '2' }}>
           <p style={{ color: 'white', fontSize: '1.2rem' }}>
             This is the teambuilder where you can manage your Grimdrive teams.

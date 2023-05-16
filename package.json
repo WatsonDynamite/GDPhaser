@@ -39,6 +39,7 @@
     "@enable3d/phaser-extension": "~0.25.3",
     "@react-three/fiber": "^8.12.0",
     "@types/react-dom": "^18.0.11",
+    "@types/react-overlays": "^3.1.0",
     "@types/store": "^2.0.2",
     "@types/styled-components": "^5.1.26",
     "@types/three": "^0.144.0",

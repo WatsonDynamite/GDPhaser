@@ -236,6 +236,7 @@ export type MonsterSpriteSet = {
   frontSpritePath: string
   backSpritePath: string
   miniSpritePath: string
+  portraitPath: string
 }
 
 export type MonsterDTO = {

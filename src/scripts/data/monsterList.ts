@@ -19,7 +19,8 @@ export const charizard = new Monster(
   {
     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
     backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png',
-    miniSpritePath: '/assets/sprites/monstersprites/charizard/charizard_mini.png'
+    miniSpritePath: '/assets/sprites/monstersprites/charizard/charizard_mini.png',
+    portraitPath: '/assets/sprites/monstersprites/blastoise/charizard_portrait.png'
   }
 )
 
@@ -38,7 +39,8 @@ export const blastoise = new Monster(
   {
     frontSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_f.png',
     backSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_b.png',
-    miniSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_mini.png'
+    miniSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_mini.png',
+    portraitPath: '/assets/sprites/monstersprites/blastoise/blastoise_portrait.png'
   }
 )
 
@@ -57,7 +59,8 @@ export const venusaur = new Monster(
   {
     frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
     backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png',
-    miniSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_mini.png'
+    miniSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_mini.png',
+    portraitPath: '/assets/sprites/monstersprites/blastoise/venusaur_portrait.png'
   }
 )
 
