@@ -26,6 +26,7 @@ export enum CustomEvents {
 
   INIT_TITLE_SCREEN = 'init_title_screen', //injects title screen
   INIT_TEAMBUILDER = 'init_teambuilder', //injects teambuilder
+  INIT_TEAM_EDITOR = 'init_team_editor',
   INIT_CONNECT_UI = 'init_connect_ui', //injects connection screen UI
   INIT_WAITING_FOR_PLAYERS_UI = 'init_waiting_for_players_ui', //injects "waiting for players..." UI
 

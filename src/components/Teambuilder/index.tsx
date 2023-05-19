@@ -64,13 +64,20 @@ function Teambuilder() {
     loadTeamData()
   }
 
+  function editTeam(team: Team, idx: number) {
+    CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_TEAM_EDITOR, { team, idx })
+  }
+
   React.useEffect(() => {
     loadTeamData()
   }, [])
+
+  /*
   ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
   ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
   ;('My%20Test%20Team1:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
   ;('My%20Test%20Team3:0001+N+Friend%20One/0002+N+Friend%20Two/0003+N+Friend%20Three;')
+  */
 
   return (
     <FullScreenContainerDiv style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -111,14 +118,14 @@ function Teambuilder() {
               <RotatingLines strokeColor="gray" />
             ) : (
               <React.Fragment>
-                <AddButton>
+                <AddButton onClick={() => CustomEventDispatcher.getInstance().emit(CustomEvents.INIT_TEAM_EDITOR)}>
                   <AiFillPlusCircle style={{ fill: 'white', width: '40px', height: '40px' }} />
                 </AddButton>
                 {teams?.map((team, idx) => (
                   <TeamItem
                     key={`${team.name}-${idx}`}
                     team={team}
-                    onClickEdit={() => {}}
+                    onClickEdit={() => editTeam(team, idx)}
                     onClickDuplicate={() => {}}
                     onClickExport={() => setIsExportModalOpen(team)}
                     onClickDelete={() => setIsDeleteModalOpen(idx)}
@@ -131,13 +138,12 @@ function Teambuilder() {
         <LoadFromCodeButton onClick={() => setIsImportModalOpen(true)} style={{ gridColumn: '2', gridRow: '1' }}>
           Load from code
         </LoadFromCodeButton>
-        <RoundedContainer style={{ gridColumn: '2', gridRow: '2' }}>
+        <RoundedContainer style={{ gridColumn: '2', gridRow: '2', overflow: 'hidden', display: 'block' }}>
           <p style={{ color: 'white', fontSize: '1.2rem' }}>
             This is the teambuilder where you can manage your Grimdrive teams.
             <br />
-            Existing teams will be listed on the left side of the screen. In order to use a team in battles, it must
-            have a total of 6 monsters. Unfinished teams will be grayed out and will not be able to be selected in
-            battles.
+            Existing teams will be listed to the left. In order to use a team in battles, it must have a total of 6
+            monsters. Unfinished teams will be grayed out and will not be able to be selected in battles.
             <br />
             Click the "+" button on the team list to begin creating a new team from scratch. Click the different buttons
             on an existing team to edit, duplicate, export or delete a team.
@@ -155,14 +161,14 @@ export default Teambuilder
 
 const Grid = styled.div`
   display: grid;
-  height: 80%;
-  width: 90%;
-  max-width: 1500px;
-  grid-template-columns: 70% 20%;
+  height: 90%;
+  width: 95%;
+  grid-template-columns: 70% 25%;
   row-gap: 5%;
   column-gap: 2%;
   grid-template-rows: 10% 70%;
   padding: 1%;
+  margin-top: 5%;
 
   > h3 {
     grid-row: 1;
@@ -180,6 +186,7 @@ const TeamContainer = styled.div`
   justify-content: start;
   align-items: center;
   gap: 10px;
+  margin-bottom: 15px;
 `
 
 const AddButton = styled.button`

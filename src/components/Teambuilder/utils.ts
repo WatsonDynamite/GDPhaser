@@ -5,15 +5,27 @@ import { InstanceMonsterFromID, monsterList } from '../../scripts/data/monsterLi
 export function addTeam(teamCode: string) {
   try {
     decryptTeam(teamCode)
-    console.log(teamCode)
     let teamCodeEscaped = teamCode.replaceAll(/;/g, '')
     let teamStore: string = store.get('teams', '')
-    console.log(teamCodeEscaped)
-    console.log(teamStore)
     teamStore += `${teamCodeEscaped};`
 
-    console.log(teamStore)
     store.set('teams', teamStore)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export function editTeam(teamCode: string, idx: number) {
+  try {
+    decryptTeam(teamCode)
+    const teamCodeEscaped = teamCode.replaceAll(/;/g, '')
+    const teamStore: string = store.get('teams', '')
+    const teamStrArr = teamStore.split(';')
+    teamStrArr.pop()
+    teamStrArr[idx] = teamCodeEscaped
+    const newTeamArr = teamStrArr.map((el) => `${el};`).join('')
+
+    store.set('teams', newTeamArr)
   } catch (err) {
     console.error(err)
   }

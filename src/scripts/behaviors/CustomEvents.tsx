@@ -9,6 +9,8 @@ import ConnectToServer from '../../components/ConnectToServerScene/ConnectToServ
 import WaitingForPlayers from '../../components/ConnectToServerScene/WaitingForPlayers'
 import TitleScreen from '../../components/TitleScreen'
 import Teambuilder from '../../components/Teambuilder'
+import { Team } from '../definitions/team'
+import TeamEditor from '../../components/Teambuilder/editor'
 
 export function init() {}
 
@@ -20,6 +22,10 @@ events.on(CustomEvents.INIT_TITLE_SCREEN, (titleUIScene: titleUIScene) =>
 )
 
 events.on(CustomEvents.INIT_TEAMBUILDER, () => root.render(<Teambuilder />))
+
+events.on(CustomEvents.INIT_TEAM_EDITOR, (edit?: { team: Team; idx: number }) =>
+  root.render(<TeamEditor edit={edit} />)
+)
 
 events.on(CustomEvents.INIT_BATTLE_UI, (battleScene: BattleScene) =>
   root.render(<BattleUI battleScene={battleScene} />)

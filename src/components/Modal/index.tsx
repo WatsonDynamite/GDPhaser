@@ -24,7 +24,9 @@ export default function Modal({ isOpen, onClose, children }: PropsWithChildren<M
 
 const ModalBackdrop = styled.div`
   background-color: rgba(47, 47, 47, 0.49);
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: center;
   align-items: center;

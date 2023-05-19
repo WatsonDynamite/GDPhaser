@@ -6,7 +6,7 @@ import _ from 'lodash'
 
 export const charizard = new Monster(
   '0001',
-  'charizard',
+  'Charizard',
   { t1: Type.FIRE, t2: Type.WIND },
   100,
   100,
@@ -26,7 +26,7 @@ export const charizard = new Monster(
 
 export const blastoise = new Monster(
   '0002',
-  'blastoise',
+  'Blastoise',
   { t1: Type.WATER },
   100,
   100,
@@ -46,7 +46,7 @@ export const blastoise = new Monster(
 
 export const venusaur = new Monster(
   '0003',
-  'venusaur',
+  'Venusaur',
   { t1: Type.NATURE, t2: Type.TOXIC },
   100,
   100,
@@ -74,7 +74,6 @@ export function InstanceMonsterFromID(id: string): Monster {
 }
 
 export function InstanceMonsterFromServerData(data: MonsterDTO): Monster {
-  console.log(data)
   const { id, currentHP, battleId, statusEffect } = data
   const monster: Monster = _.cloneDeep(monsterList.get(id)) as Monster
   monster.setBattleId(battleId)
@@ -84,4 +83,8 @@ export function InstanceMonsterFromServerData(data: MonsterDTO): Monster {
     // monster.setStatusEffect(...)
   }
   return monster
+}
+
+export function cloneMonster(monster: Monster): Monster {
+  return _.cloneDeep(monster) as Monster
 }

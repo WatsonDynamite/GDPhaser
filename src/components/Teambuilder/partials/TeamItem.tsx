@@ -24,7 +24,7 @@ export default function TeamItem({ team, onClickDelete, onClickDuplicate, onClic
       </MonContainer>
       <ButtonContainer>
         <CustomButton>
-          <AiFillEdit height={40} width={40} />
+          <AiFillEdit height={40} width={40} onClick={() => onClickEdit()} />
         </CustomButton>
         <CustomButton>
           <AiFillCopy height={40} width={40} />
@@ -81,4 +81,8 @@ const RoundedContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  > h2 {
+    width: 300px;
+  }
 `
