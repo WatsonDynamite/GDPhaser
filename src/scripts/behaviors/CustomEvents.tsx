@@ -38,7 +38,3 @@ events.on(CustomEvents.INIT_CONNECT_UI, (titleUIScene: titleUIScene) =>
 events.on(CustomEvents.INIT_WAITING_FOR_PLAYERS_UI, () => {
   root.render(<WaitingForPlayers />)
 })
-
-//events.on(CustomEvents.INIT_BATTLE_SCENE, (socketClient: Socket<DefaultEventsMap, DefaultEventsMap>) => {
-//  Phaser.
-//})
