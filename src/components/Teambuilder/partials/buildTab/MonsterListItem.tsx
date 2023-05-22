@@ -56,8 +56,8 @@ export default function MonsterListItem({ listkey, monster, onClick, isSelected 
           <div>{monster.stats.wis.value}</div>
         </StatContainer>
         <StatContainer>
-          <div>INT</div>
-          <div>{monster.stats.dex.value}</div>
+          <div>INS</div>
+          <div>{monster.stats.ins.value}</div>
         </StatContainer>
         <StatContainer>
           <div>DEX</div>
