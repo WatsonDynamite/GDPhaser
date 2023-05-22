@@ -10,6 +10,7 @@ import Modal from '../../Modal'
 import { addTeam, editTeam, encryptTeam } from '../utils'
 import CustomEventDispatcher, { CustomEvents } from '../../../scripts/behaviors/CustomEventDispatcher'
 import NicknameForm from './buildTab/NicknameForm'
+import MonsterDetails from './buildTab/MonsterDetails'
 
 type BuildTabProps = {
   edit?: {
@@ -63,8 +64,8 @@ export default function BuildTab({ edit }: BuildTabProps) {
             setSelected={() => setSelectedSlot(i)}
             onMoveLeft={() => onMove(i, 'left')}
             onMoveRight={() => onMove(i, 'right')}
-            canMoveLeft={!!monstersInTeam[i - 1]}
-            canMoveRight={!!monstersInTeam[i + 1]}
+            canMoveLeft={!!monstersInTeam[i - 1] && !!monstersInTeam[i]}
+            canMoveRight={!!monstersInTeam[i + 1] && !!monstersInTeam[i]}
           />
         </React.Fragment>
       )
@@ -118,37 +119,29 @@ export default function BuildTab({ edit }: BuildTabProps) {
 
   return (
     <Container>
-      <Modal isOpen={!!isErrorModalOpen} onClose={() => setErrorModalOpen(null)}>
-        <p>There are issues with this team:</p>
-        <div>{isErrorModalOpen}</div>
-      </Modal>
-      <Row>
-        <TeamNameInput maxLength={32} value={teamName} onChange={(e) => setTeamName(e.currentTarget.value)} />
-        <button style={{ height: '40px' }} onClick={() => validateAndSave(setErrorModalOpen)}>
-          <AiFillSave width={40} height={40} />
-        </button>
-      </Row>
-      <Row>
-        <TeamMonsters>{renderMonsterItems()}</TeamMonsters>
-        {selectedMonster && (
-          <NicknameForm monster={selectedMonster} onSaveNickname={(monster: Monster) => addMonster(monster)} />
-        )}
-      </Row>
-
-      <MonsterTable>
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>{renderMonsterList()}</tbody>
-      </MonsterTable>
+      <UIContainer>
+        <Modal isOpen={!!isErrorModalOpen} onClose={() => setErrorModalOpen(null)}>
+          <p>There are issues with this team:</p>
+          <div>{isErrorModalOpen}</div>
+        </Modal>
+        <Row>
+          <TeamNameInput maxLength={32} value={teamName} onChange={(e) => setTeamName(e.currentTarget.value)} />
+          <button style={{ height: '40px' }} onClick={() => validateAndSave(setErrorModalOpen)}>
+            <AiFillSave width={40} height={40} />
+          </button>
+        </Row>
+        <Row style={{ height: '164px' }}>
+          <TeamMonsters>{renderMonsterItems()}</TeamMonsters>
+          {selectedMonster && (
+            <NicknameForm monster={selectedMonster} onSaveNickname={(monster: Monster) => addMonster(monster)} />
+          )}
+        </Row>
+        <MonsterTable>
+          <div></div>
+          <div>{renderMonsterList()}</div>
+        </MonsterTable>
+      </UIContainer>
+      <DetailsContainer>{selectedMonster && <MonsterDetails monster={selectedMonster} />}</DetailsContainer>
     </Container>
   )
 }
@@ -166,12 +159,12 @@ const Row = styled.div`
   align-items: center;
 `
 
-const MonsterTable = styled.table`
-  width: 98%;
+const MonsterTable = styled.div`
   margin-top: 15px;
-  border-collapse: collapse;
+  padding: 10px;
   border: 2px solid darkgray;
   border-radius: 10px;
+  overflow-y: scroll;
 
   > thead {
     > tr {
@@ -183,13 +176,32 @@ const MonsterTable = styled.table`
 `
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
+  height: 71vh;
+  background: lightgray;
+  display: flex;
+  flex-gap: 5px;
+  padding: 15px;
+`
+
+const UIContainer = styled.div`
+  width: 75%;
+  height: inherit;
   background: lightgray;
   display: flex;
   flex-direction: column;
   flex-gap: 5px;
   padding: 15px;
+`
+
+const DetailsContainer = styled.div`
+  width: 22%;
+  background-color: gray;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 2px solid darkgray;
+  border-radius: 10px;
+  overflow-y: scroll;
 `
 
 const TeamMonsters = styled.div`

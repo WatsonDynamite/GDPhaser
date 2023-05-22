@@ -1,6 +1,7 @@
 import store from 'store'
 import { Team } from '../../scripts/definitions/team'
 import { InstanceMonsterFromID, monsterList } from '../../scripts/data/monsterList'
+import React from 'react'
 
 export function addTeam(teamCode: string) {
   try {
@@ -90,4 +91,18 @@ export function encryptTeam(team: Team): string {
   })
   teamString += ';'
   return teamString
+}
+
+export const useMousePosition = () => {
+  const [mousePosition, setMousePosition] = React.useState({ x: null, y: null })
+  React.useEffect(() => {
+    const updateMousePosition = (ev) => {
+      setMousePosition({ x: ev.clientX, y: ev.clientY })
+    }
+    window.addEventListener('mousemove', updateMousePosition)
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition)
+    }
+  }, [])
+  return mousePosition
 }

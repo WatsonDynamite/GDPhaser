@@ -48,7 +48,7 @@ const Tab = styled.div<{ active: boolean }>`
   border-bottom: ${({ active }) => (active ? 'unset' : '4px solid darkgray')};
   border-radius: 25px 25px 0 0;
   background-color: white;
-  font-family: 'Roboto';
+  font-family: 'PixelCastle';
   font-weight: bold;
   font-size: 1.3em;
 

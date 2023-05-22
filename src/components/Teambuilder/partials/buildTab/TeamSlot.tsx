@@ -29,11 +29,19 @@ export default function TeamSlot({
 }: TeamSlotProps) {
   return (
     <Container key={listkey}>
-      {idx > 0 && <button onClick={() => onMoveLeft()}>{'<'}</button>}
+      {idx > 0 && (
+        <button disabled={!canMoveLeft} onClick={() => onMoveLeft()}>
+          {'<'}
+        </button>
+      )}
       <MiniSpriteContainer selected={selected} onClick={() => setSelected(idx)}>
         {monster ? <img src={monster.sprites.miniSpritePath} /> : <BiBlock />}
       </MiniSpriteContainer>
-      {idx < 5 && <button onClick={() => onMoveRight()}>{'>'}</button>}
+      {idx < 5 && (
+        <button disabled={!canMoveRight} onClick={() => onMoveRight()}>
+          {'>'}
+        </button>
+      )}
     </Container>
   )
 }

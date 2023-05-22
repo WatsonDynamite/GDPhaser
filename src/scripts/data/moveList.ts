@@ -2,7 +2,7 @@ import { Category, Targeting } from '../definitions/enums'
 import { Move } from '../definitions/move'
 import { Type } from '../definitions/type'
 
-const testMoveFire = new Move('testMoveFire', 'Test - Fire', 'Test move', 50, 2, Type.FIRE, Category.SPECIAL, 1, [], {
+const testMoveFire = new Move('testMoveFire', 'Test - Fire', 'Test move', 50, 2, Type.FIRE, Category.MAGICAL, 1, [], {
   targeting: Targeting.SINGLE_ENEMY
 })
 const testMoveNature = new Move(
@@ -12,7 +12,7 @@ const testMoveNature = new Move(
   50,
   2,
   Type.NATURE,
-  Category.SPECIAL,
+  Category.MAGICAL,
   1,
   [],
   {
@@ -26,7 +26,7 @@ const testMoveWater = new Move(
   50,
   2,
   Type.WATER,
-  Category.SPECIAL,
+  Category.MAGICAL,
   1,
   [],
   {

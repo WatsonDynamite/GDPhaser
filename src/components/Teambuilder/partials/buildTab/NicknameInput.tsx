@@ -28,7 +28,7 @@ export default function NicknameInput({ monster, id, labelText, placeholder, onS
     <Container>
       <label htmlFor={id}>{labelText}</label>
 
-      <Row width={'100px'}>
+      <Row width={'140px'}>
         {isEditing ? (
           <>
             <input
@@ -37,12 +37,12 @@ export default function NicknameInput({ monster, id, labelText, placeholder, onS
               id={id}
               placeholder={placeholder}
             ></input>
-            <AiOutlineCheck onClick={() => onSaveHandler()} style={{ cursor: 'pointer' }} />
+            <AiOutlineCheck width={40} height={40} onClick={() => onSaveHandler()} style={{ cursor: 'pointer' }} />
           </>
         ) : (
           <>
             <p>{!monster.getNickname() || monster.getNickname() === '' ? monster.name : monster.getNickname()}</p>
-            <AiOutlineEdit onClick={() => setIsEditing(true)} style={{ cursor: 'pointer' }} />
+            <AiOutlineEdit width={40} height={40} onClick={() => setIsEditing(true)} style={{ cursor: 'pointer' }} />
           </>
         )}
       </Row>
@@ -69,6 +69,11 @@ const Row = styled.div<{ width?: string }>`
 
   > p {
     margin: 0 !important;
+  }
+
+  > svg {
+    width: 20px;
+    height: 20px;
   }
 
   > input {

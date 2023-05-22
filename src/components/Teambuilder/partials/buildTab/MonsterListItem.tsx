@@ -2,7 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { Monster } from '../../../../scripts/definitions/monster'
 import { Type } from '../../../../scripts/definitions/type'
-import { getTypeColor } from '../../../../utils'
+import { getTypeData } from '../../../../utils'
+import MoveItem from './MoveItem'
 
 type MonsterListItemProps = {
   listkey: string
@@ -20,8 +21,8 @@ export default function MonsterListItem({ listkey, monster, onClick, isSelected 
       }}
       isSelected={isSelected}
     >
-      <td>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', height: '100%', width: '416px' }}>
           <MonsterIdentityContainer>
             <img src={monster.sprites.miniSpritePath} />
             <p>{monster.name}</p>
@@ -32,74 +33,67 @@ export default function MonsterListItem({ listkey, monster, onClick, isSelected 
           </MonsterIdentityContainer>
           <MoveListContainer>
             {monster.getMoves().map((move, idx) => {
-              return (
-                <MoveItem key={`${move.name}-${idx}`} type={move.type}>
-                  <div />
-                  {move.name}
-                </MoveItem>
-              )
+              return <MoveItem key={`${move.name}-${idx}`} move={move} />
             })}
           </MoveListContainer>
         </div>
-      </td>
-      <td>
+      </div>
+      <Stats>
         <StatContainer>
           <div>CON</div>
           <div>{monster.stats.con.value}</div>
         </StatContainer>
-      </td>
-      <td>
         <StatContainer>
           <div>STR</div>
           <div>{monster.stats.str.value}</div>
         </StatContainer>
-      </td>
-      <td>
         <StatContainer>
           <div>ARM</div>
           <div>{monster.stats.arm.value}</div>
         </StatContainer>
-      </td>
-      <td>
         <StatContainer>
           <div>WIS</div>
           <div>{monster.stats.wis.value}</div>
         </StatContainer>
-      </td>
-      <td>
         <StatContainer>
           <div>INT</div>
           <div>{monster.stats.dex.value}</div>
         </StatContainer>
-      </td>
-      <td>
         <StatContainer>
           <div>DEX</div>
           <div>{monster.stats.dex.value}</div>
         </StatContainer>
-      </td>
+      </Stats>
     </Container>
   )
 }
 
-const Container = styled.tr<{ isSelected: boolean }>`
-  width: inherit;
+const Container = styled.div<{ isSelected: boolean }>`
+  width: 95%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border: 2px solid darkgray;
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px 20px;
   margin-top: 10px;
   cursor: pointer;
   ${({ isSelected }) => (isSelected ? 'background-color: gray;' : '')}
-
-  > td {
+  > div {
     width: min-content;
   }
+`
+
+const Stats = styled.div`
+  display: flex;
+  gap: 20px;
 `
 
 const MoveListContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin: 10px;
+  width: 175px;
 `
 
 const StatContainer = styled.div`
@@ -110,30 +104,14 @@ const StatContainer = styled.div`
   gap: 10px;
 `
 
-const MoveItem = styled.div<{ type: Type }>`
-  min-width: 150px;
-  display: flex;
-  border: 1px solid darkgray;
-  border-radius: 5px;
-  padding: 10px;
-  gap: 5px;
-
-  > div {
-    padding: 10px;
-    border-radius: 50%;
-    background-color: ${({ type }) => getTypeColor(type)};
-  }
-`
-
 const MonsterIdentityContainer = styled.div`
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   background-color: lightgray;
-  border: 2px solid gray;
   border-radius: 10px;
   overflow: hidden;
-  width: min-content;
+  width: 210px;
 
   > p {
     text-align: center;

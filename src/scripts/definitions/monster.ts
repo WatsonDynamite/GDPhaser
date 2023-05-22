@@ -36,11 +36,11 @@ export class Monster {
 
   /** The stats of the monster */
   stats: {
-    con: Stat //HP
-    str: StatWithModifier //ATK
-    arm: StatWithModifier //DEF
-    int: StatWithModifier //SP.ATK
-    wis: StatWithModifier //SP.DEF
+    con: Stat //HP -> Constitution
+    str: StatWithModifier //ATK -> Strength
+    arm: StatWithModifier //DEF -> Armor
+    wis: StatWithModifier //SP.ATK -> Wisdom
+    ins: StatWithModifier //SP.DEF -> Insight
     dex: StatWithModifier //SPEED
   }
 
@@ -78,11 +78,12 @@ export class Monster {
     str: number,
     arm: number,
     wis: number,
-    int: number,
+    ins: number,
     dex: number,
     moves: { m1: Move; m2?: Move; m3?: Move; m4?: Move },
     ability: Ability,
-    sprites: MonsterSpriteSet
+    sprites: MonsterSpriteSet,
+    description: string
   ) {
     this.id = id
     this.nickname = null
@@ -96,7 +97,7 @@ export class Monster {
       str: new StatWithModifier(str),
       arm: new StatWithModifier(arm),
       wis: new StatWithModifier(wis),
-      int: new StatWithModifier(int),
+      ins: new StatWithModifier(ins),
       dex: new StatWithModifier(dex)
     }),
       (this.currentHP = con) //every monster starts at full health
@@ -107,6 +108,7 @@ export class Monster {
     this.statusEffect = undefined //this definitely should not stay undefined
     this.ability = ability
     this.sprites = sprites
+    this.desc = description
   }
 
   /**

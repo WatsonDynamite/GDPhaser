@@ -72,7 +72,7 @@ export class TurnActionDamageMoveSingleTarget extends TurnAction {
       let effectivenessMessage = ''
       let effectivenessCalc = effectiveness(type, targetType1) * (targetType2 ? effectiveness(type, targetType2) : 1)
 
-      if (category != Category.STATUS) {
+      if (category != Category.BOON) {
         //you can only use status moves against gridspots, so in this case
 
         switch (effectivenessCalc) {
@@ -96,9 +96,9 @@ export class TurnActionDamageMoveSingleTarget extends TurnAction {
 
       //check if move is special or physical
       const attackingStat =
-        this.getMove().category === Category.PHYSICAL ? userStats.str.getTrueValue() : userStats.int.getTrueValue()
+        this.getMove().category === Category.PHYSICAL ? userStats.str.getTrueValue() : userStats.wis.getTrueValue()
       const defendingStat =
-        this.getMove().category === Category.PHYSICAL ? targetStats.arm.getTrueValue() : targetStats.wis.getTrueValue()
+        this.getMove().category === Category.PHYSICAL ? targetStats.arm.getTrueValue() : targetStats.ins.getTrueValue()
 
       //TODO: subtract AP
 

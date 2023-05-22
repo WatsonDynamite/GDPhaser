@@ -1,7 +1,8 @@
 export enum Category { //whether the move uses sp.atk to hit sp.def or uses atk to hit def
   PHYSICAL,
-  SPECIAL,
-  STATUS
+  MAGICAL,
+  BOON,
+  BANE
 }
 
 export enum StatusEffectIndex {
@@ -42,17 +43,17 @@ export enum AbilityFrequency {
 }
 
 export enum Targeting {
-  USER,
-  SINGLE_ENEMY,
-  SINGLE_TEAMMATE,
-  SINGLE_GRID_SELF,
-  SINGLE_GRID_ENEMY,
-  MULTIPLE_ENEMY,
-  MULTIPLE_TEAMMATE,
-  MULTIPLE_GRID_OTHER,
-  MULTIPLE_GRID_SELF,
-  MULTIPLE_GRID_SELF_FORMATION,
-  MULTIPLE_GRID_OTHER_FORMATION
+  USER, // self
+  SINGLE_ENEMY, // a single enemy
+  SINGLE_TEAMMATE, // a single team mate
+  SINGLE_GRID_SELF, // a single grid spot on the player's grid
+  SINGLE_GRID_ENEMY, // a single grid spot on the enemy's grid
+  MULTIPLE_ENEMY, // multiple enemies
+  MULTIPLE_TEAMMATE, // multiple teammates
+  MULTIPLE_GRID_OTHER, // multiple grid spots on the enemy grid
+  MULTIPLE_GRID_SELF, // multiple grid spots on the player grid
+  MULTIPLE_GRID_SELF_FORMATION, // a formation of spots on the player grid
+  MULTIPLE_GRID_OTHER_FORMATION // a formation of spots on the enemy grid
 }
 
 export enum SocketEvents {

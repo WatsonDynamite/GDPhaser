@@ -2,6 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import { Monster } from '../../../../scripts/definitions/monster'
 import NicknameInput from './NicknameInput'
+import { getTypeData } from '../../../../utils'
+import MoveItem from './MoveItem'
+import StatItem from './StatItem'
 
 type NicknameFormProps = {
   monster: Monster
@@ -10,7 +13,6 @@ type NicknameFormProps = {
 
 export default function NicknameForm({ monster, onSaveNickname }: NicknameFormProps) {
   function saveNicknameHandler(monsterCpy) {
-    console.log(monsterCpy)
     onSaveNickname(monsterCpy)
   }
 
@@ -28,12 +30,26 @@ export default function NicknameForm({ monster, onSaveNickname }: NicknameFormPr
           />
         </div>
       </Column>
-      <Column>
-        <Row></Row>
+      {/* 
+
+        <Column>
+        <label>Type</label>
+        <Row>
+          {<img width={30} src={getTypeData(monster.type1).symbol} />}
+          {monster.type2 && <img width={30} src={getTypeData(monster.type2).symbol} />}
+        </Row>
       </Column>
       <Column>
-        <Row></Row>
+        {monster.getMoves().map((move) => (
+          <MoveItem isSmall move={move} key={move.id} />
+        ))}
       </Column>
+      <Column style={{ width: '150px' }}>
+        {Object.entries(monster.stats).map((stat) => (
+          <StatItem key={stat[0]} name={stat[0]} stat={stat[1]} />
+        ))}
+      </Column>
+      */}
     </Container>
   )
 }
@@ -47,10 +63,11 @@ export default function NicknameForm({ monster, onSaveNickname }: NicknameFormPr
  */
 const Container = styled.div`
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: auto;
   padding: 10px;
   border: 2px solid darkgray;
   border-radius: 10px;
+  gap: 20px;
 `
 
 const Column = styled.div`

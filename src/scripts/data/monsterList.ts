@@ -8,11 +8,11 @@ export const charizard = new Monster(
   '0001',
   'Charizard',
   { t1: Type.FIRE, t2: Type.WIND },
+  70,
+  80,
+  70,
   100,
-  100,
-  100,
-  100,
-  100,
+  80,
   100,
   { m1: moveList.get('testMoveFire')! },
   Abilities.TEST,
@@ -20,8 +20,9 @@ export const charizard = new Monster(
     frontSpritePath: '/assets/sprites/monstersprites/charizard/charizard_f.png',
     backSpritePath: '/assets/sprites/monstersprites/charizard/charizard_b.png',
     miniSpritePath: '/assets/sprites/monstersprites/charizard/charizard_mini.png',
-    portraitPath: '/assets/sprites/monstersprites/blastoise/charizard_portrait.png'
-  }
+    portraitPath: '/assets/sprites/monstersprites/charizard/charizard_portrait.png'
+  },
+  "Greetings I'm Charizard"
 )
 
 export const blastoise = new Monster(
@@ -29,11 +30,11 @@ export const blastoise = new Monster(
   'Blastoise',
   { t1: Type.WATER },
   100,
+  70,
   100,
-  100,
-  100,
-  100,
-  100,
+  80,
+  80,
+  70,
   { m1: moveList.get('testMoveWater')! },
   Abilities.TEST,
   {
@@ -41,7 +42,8 @@ export const blastoise = new Monster(
     backSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_b.png',
     miniSpritePath: '/assets/sprites/monstersprites/blastoise/blastoise_mini.png',
     portraitPath: '/assets/sprites/monstersprites/blastoise/blastoise_portrait.png'
-  }
+  },
+  "Hello I'm Blastoise"
 )
 
 export const venusaur = new Monster(
@@ -49,19 +51,21 @@ export const venusaur = new Monster(
   'Venusaur',
   { t1: Type.NATURE, t2: Type.TOXIC },
   100,
+  70,
+  80,
+  80,
   100,
-  100,
-  100,
-  100,
-  100,
+  70,
   { m1: moveList.get('testMoveNature')! },
   Abilities.TEST,
   {
     frontSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_f.png',
     backSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_b.png',
     miniSpritePath: '/assets/sprites/monstersprites/venusaur/venusaur_mini.png',
-    portraitPath: '/assets/sprites/monstersprites/blastoise/venusaur_portrait.png'
-  }
+    portraitPath: '/assets/sprites/monstersprites/venusaur/venusaur_portrait.png'
+  },
+
+  "Sup I'm Venusaur"
 )
 
 export const monsterList = new Map<string, Monster>()
