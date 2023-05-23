@@ -17,7 +17,7 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
   )
   const [showTooltip, setShowTooltip] = React.useState<boolean>(false)
   const {
-    stats: { arm, dex, ins, str, wis },
+    stats: { arm, dex, end, str, wis },
     type1,
     type2
   } = monster
@@ -47,7 +47,7 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
         <p>STR: {str.value}</p>
         <p>ARM: {arm.value}</p>
         <p>WIS: {wis.value}</p>
-        <p>INS: {ins.value}</p>
+        <p>END: {end.value}</p>
         <p>DEX: {dex.value}</p>
         <p>
           {type1}

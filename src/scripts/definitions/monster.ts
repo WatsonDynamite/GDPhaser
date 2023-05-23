@@ -40,8 +40,8 @@ export class Monster {
     str: StatWithModifier //ATK -> Strength
     arm: StatWithModifier //DEF -> Armor
     wis: StatWithModifier //SP.ATK -> Wisdom
-    ins: StatWithModifier //SP.DEF -> Insight
-    dex: StatWithModifier //SPEED
+    end: StatWithModifier //SP.DEF -> Endurance
+    dex: StatWithModifier //SPEED -> Dexterity
   }
 
   /** The four moves of a monster
@@ -78,7 +78,7 @@ export class Monster {
     str: number,
     arm: number,
     wis: number,
-    ins: number,
+    end: number,
     dex: number,
     moves: { m1: Move; m2?: Move; m3?: Move; m4?: Move },
     ability: Ability,
@@ -97,7 +97,7 @@ export class Monster {
       str: new StatWithModifier(str),
       arm: new StatWithModifier(arm),
       wis: new StatWithModifier(wis),
-      ins: new StatWithModifier(ins),
+      end: new StatWithModifier(end),
       dex: new StatWithModifier(dex)
     }),
       (this.currentHP = con) //every monster starts at full health

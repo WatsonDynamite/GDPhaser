@@ -98,7 +98,7 @@ export class TurnActionDamageMoveSingleTarget extends TurnAction {
       const attackingStat =
         this.getMove().category === Category.PHYSICAL ? userStats.str.getTrueValue() : userStats.wis.getTrueValue()
       const defendingStat =
-        this.getMove().category === Category.PHYSICAL ? targetStats.arm.getTrueValue() : targetStats.ins.getTrueValue()
+        this.getMove().category === Category.PHYSICAL ? targetStats.arm.getTrueValue() : targetStats.end.getTrueValue()
 
       //TODO: subtract AP
 
