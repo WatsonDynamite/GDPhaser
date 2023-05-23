@@ -13,11 +13,11 @@ export interface MonsterPlateProps {
 
 export default function MonsterPlate({ monster, camera, canvas }: MonsterPlateProps) {
   const [position, setPosition] = React.useState<Vector2>(
-    getScreenPositionFromWorldSpace(monster.getGridSpot().spotModel.position, camera, canvas)
+    getScreenPositionFromWorldSpace(monster.getGridSpot().spotModel.position, camera)
   )
   const [showTooltip, setShowTooltip] = React.useState<boolean>(false)
   const {
-    stats: { arm, dex, int, str, wis },
+    stats: { arm, dex, ins, str, wis },
     type1,
     type2
   } = monster
@@ -26,7 +26,7 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
   const vertModifier = monster.getGridSpot().getPlayer() === 2 ? 22 : 0
 
   function recalculatePosition() {
-    setPosition(getScreenPositionFromWorldSpace(monster.getGridSpot().spotModel.position, camera, canvas))
+    setPosition(getScreenPositionFromWorldSpace(monster.getGridSpot().spotModel.position, camera))
   }
 
   useEffect(() => {
@@ -41,13 +41,13 @@ export default function MonsterPlate({ monster, camera, canvas }: MonsterPlatePr
       x={x}
       y={y - vertModifier}
     >
-      <h1>{monster.name}</h1>
+      <h1>{monster.getNickname() ?? monster.name}</h1>
       <MonsterHP currentHP={monster.currentHP} maxHP={monster.maxHP} />
       <Tooltip show={showTooltip}>
         <p>STR: {str.value}</p>
         <p>ARM: {arm.value}</p>
-        <p>INT: {int.value}</p>
         <p>WIS: {wis.value}</p>
+        <p>INS: {ins.value}</p>
         <p>DEX: {dex.value}</p>
         <p>
           {type1}

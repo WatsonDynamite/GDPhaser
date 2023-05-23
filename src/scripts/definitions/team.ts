@@ -1,12 +1,11 @@
-import { Monster } from "./monster";
+import { Monster } from './monster'
 
-export class Team
-    {
-        name: string;
-        monsters: Monster[];
+export class Team {
+  name: string
+  monsters: Monster[]
 
-        public Team (name: string, monsters: Monster[] ) {
-            this.name = name;
-            this.monsters = monsters;
-        }
-    }
+  constructor(name: string, monsters: Monster[]) {
+    this.name = name
+    this.monsters = monsters
+  }
+}

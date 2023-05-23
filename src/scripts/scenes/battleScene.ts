@@ -64,6 +64,7 @@ export default class BattleScene extends Scene3D {
             playerMonsterDataForServer.push({
               monster: {
                 id: monster.id,
+                nickname: monster.getNickname(),
                 battleId: monsterBattleId,
                 currentHP: monster.currentHP
               },
@@ -254,7 +255,7 @@ export default class BattleScene extends Scene3D {
           if (dto.moveID) {
             const move = moveList.get(dto.moveID)!
 
-            if (move.category !== Category.STATUS) {
+            if (move.category !== Category.BOON) {
               switch (move.targeting.targeting) {
                 case Targeting.SINGLE_ENEMY:
                 case Targeting.SINGLE_TEAMMATE:

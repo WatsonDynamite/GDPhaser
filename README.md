@@ -33,12 +33,13 @@ $ npm run build
 Server soft. for Grimdrive to run on
 
 ## How to use
+You must have TS-Node installed.
 
 ```console
 # Install dependencies
 $ npm install
 
-# Start the local development server (on port 8080)
+# Start the local development server (on port 3002)
 $ cd ./src
 $ ts-node --esm server.ts
 
